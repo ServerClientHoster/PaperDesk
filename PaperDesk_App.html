@@ -1,0 +1,2604 @@
+<html lang="en" class="h-full"><head><base href="https://1574329493-atari-embeds.googleusercontent.com/embeds/4c8a3211fd76886a93ab92bca3a50520/inner-frame-minified.html?jsh=m%3B%2F_%2Fscs%2Fabc-static%2F_%2Fjs%2Fk%3Dgapi.lb.en.etOqPKhAhvg.O%2Fd%3D1%2Frs%3DAHpOoo-l5JrVgGKVELwC844E6riBHX86-w%2Fm%3D__features__" target="_blank">
+      <script>
+        (function() {
+          // Listen during capturing phase to intercept before <base target="_blank"> takes effect.
+          document.addEventListener('click', function(e) {
+            // Find the nearest ancestor anchor (handles nested icons, spans, svgs).
+            var el = e.target;
+            var anchor = null;
+            while (el && el !== document) {
+              if (el.tagName && el.tagName.toLowerCase() === 'a') {
+                anchor = el;
+                break;
+              }
+              el = el.parentElement;
+            }
+            if (!anchor) return;
+
+            // Only intercept relative in-page fragment links, not external links with hashes.
+            var href = anchor.getAttribute('href');
+            if (!href) return;
+            href = href.trim();
+            if (!href.startsWith('#')) return;
+
+            // Prevent default <base target="_blank"> navigation to a new blank tab.
+            e.preventDefault();
+            e.stopPropagation();
+
+            // Handle empty anchor or top anchor.
+            if (href === '#' || href === '#top') {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              return;
+            }
+
+            // Resolve target element by id, falling back to legacy name attribute.
+            var targetId = href.slice(1);
+            try {
+              targetId = decodeURIComponent(targetId);
+            } catch (err) {}
+
+            var targetEl = document.getElementById(targetId);
+            if (!targetEl) {
+              try {
+                var escaped = window.CSS && CSS.escape ? CSS.escape(targetId) : targetId.replace(/["\\]/g, '\\$&');
+                targetEl = document.querySelector('[name="' + escaped + '"]');
+              } catch (err) {}
+            }
+
+            // Smoothly scroll to the target within the embed and update URL hash history.
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              if (window.history && window.history.pushState) {
+                window.history.pushState(null, '', href);
+              }
+            }
+          }, true); // useCapture: true is critical to preempt <base target="_blank">
+        })();
+      </script>
+    
+
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PaperDesk Ultra - Editorial Workspace</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- FontAwesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Marked.js for Markdown Parsing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+
+  <!-- JSZip for Exporting Zip Archives -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <!-- KaTeX for LaTeX Math Rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Highlight.js for Syntax Highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+            serif: ['Georgia', 'Garamond', '"Times New Roman"', 'serif'],
+            mono: ['"SF Mono"', 'Consolas', 'Monaco', 'monospace'],
+            dyslexic: ['Comic Sans MS', 'OpenDyslexic', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* ARTISANAL THEMES */
+    :root, .theme-sepia {
+      --bg-main: #FAF6EF;
+      --bg-sheet: #F4ECE1;
+      --bg-card: #FAF6EF;
+      --bg-sidebar: #F4ECE1;
+      --border-color: #E2D7C7;
+      --text-main: #3D312E;
+      --text-muted: #82726B;
+      --accent-color: #C0682C;
+      --accent-light: #F2E3D0;
+      --shadow-color: rgba(61, 49, 46, 0.08);
+    }
+
+    .theme-light {
+      --bg-main: #FFFFFF;
+      --bg-sheet: #F3F4F6;
+      --bg-card: #FFFFFF;
+      --bg-sidebar: #F9FAFB;
+      --border-color: #E5E7EB;
+      --text-main: #111827;
+      --text-muted: #6B7280;
+      --accent-color: #2563EB;
+      --accent-light: #DBEAFE;
+      --shadow-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .theme-dark {
+      --bg-main: #18181B;
+      --bg-sheet: #27272A;
+      --bg-card: #27272A;
+      --bg-sidebar: #202023;
+      --border-color: #3F3F46;
+      --text-main: #F4F4F5;
+      --text-muted: #A1A1AA;
+      --accent-color: #F97316;
+      --accent-light: #431407;
+      --shadow-color: rgba(0, 0, 0, 0.35);
+    }
+
+    .theme-midnight {
+      --bg-main: #090D16;
+      --bg-sheet: #111827;
+      --bg-card: #111827;
+      --bg-sidebar: #0F172A;
+      --border-color: #1E293B;
+      --text-main: #E2E8F0;
+      --text-muted: #64748B;
+      --accent-color: #38BDF8;
+      --accent-light: #0C4A6E;
+      --shadow-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .theme-nord {
+      --bg-main: #2E3440;
+      --bg-sheet: #3B4252;
+      --bg-card: #3B4252;
+      --bg-sidebar: #353C4A;
+      --border-color: #4C566A;
+      --text-main: #ECEFF4;
+      --text-muted: #D8DEE9;
+      --accent-color: #88C0D0;
+      --accent-light: #2E4756;
+      --shadow-color: rgba(0, 0, 0, 0.25);
+    }
+
+    .theme-cybergold {
+      --bg-main: #121212;
+      --bg-sheet: #1E1E1E;
+      --bg-card: #1E1E1E;
+      --bg-sidebar: #181818;
+      --border-color: #332A1B;
+      --text-main: #F5E0B3;
+      --text-muted: #998866;
+      --accent-color: #E5A93C;
+      --accent-light: #3D2C0F;
+      --shadow-color: rgba(229, 169, 60, 0.1);
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .theme-bg-main { background-color: var(--bg-main); }
+    .theme-bg-sheet { background-color: var(--bg-sheet); }
+    .theme-bg-card { background-color: var(--bg-card); }
+    .theme-bg-sidebar { background-color: var(--bg-sidebar); }
+    .theme-border { border-color: var(--border-color); }
+    .theme-text-main { color: var(--text-main); }
+    .theme-text-muted { color: var(--text-muted); }
+    .theme-accent { color: var(--accent-color); }
+    .theme-bg-accent { background-color: var(--accent-color); }
+    .theme-bg-accent-light { background-color: var(--accent-light); }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+
+    /* Markdown Prose Styling */
+    .prose-ultra h1 { font-size: 1.8em; font-weight: 700; margin-top: 0.8em; margin-bottom: 0.4em; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3em; color: var(--text-main); }
+    .prose-ultra h2 { font-size: 1.4em; font-weight: 600; margin-top: 0.8em; margin-bottom: 0.3em; color: var(--text-main); }
+    .prose-ultra h3 { font-size: 1.2em; font-weight: 600; margin-top: 0.6em; margin-bottom: 0.2em; color: var(--text-main); }
+    .prose-ultra p { margin-bottom: 1em; line-height: 1.7; color: var(--text-main); }
+    .prose-ultra ul { list-style-type: disc; padding-left: 1.4em; margin-bottom: 1em; }
+    .prose-ultra ol { list-style-type: decimal; padding-left: 1.4em; margin-bottom: 1em; }
+    .prose-ultra li { margin-bottom: 0.3em; }
+    .prose-ultra blockquote { border-left: 4px solid var(--accent-color); padding-left: 1em; margin-bottom: 1em; font-style: italic; background: var(--bg-sheet); padding-top: 0.4em; padding-bottom: 0.4em; border-radius: 0 6px 6px 0; }
+    .prose-ultra code { background: rgba(128, 128, 128, 0.15); padding: 0.15em 0.4em; border-radius: 4px; font-family: monospace; font-size: 0.88em; color: var(--accent-color); }
+    .prose-ultra pre { background: #1E1E24; color: #F8F8F2; padding: 1em; border-radius: 8px; overflow-x: auto; margin-bottom: 1em; font-family: monospace; }
+    .prose-ultra pre code { background: transparent; color: inherit; padding: 0; }
+    .prose-ultra table { width: 100%; border-collapse: collapse; margin-bottom: 1em; font-size: 0.9em; }
+    .prose-ultra th, .prose-ultra td { border: 1px solid var(--border-color); padding: 0.5em 0.8em; text-align: left; }
+    .prose-ultra th { background: var(--bg-sheet); font-weight: 600; }
+    .wiki-link { color: var(--accent-color); font-weight: 600; background: var(--accent-light); padding: 0.1em 0.3em; border-radius: 4px; cursor: pointer; text-decoration: none; }
+    .wiki-link:hover { text-decoration: underline; }
+
+    /* Button Animations */
+    .btn-ultra { transition: all 0.15s ease; }
+    .btn-ultra:active { transform: scale(0.97); }
+
+    /* Zen Mode */
+    .zen-active header, .zen-active aside, .zen-active #renameBar, .zen-active #editorToolbar, .zen-active #editorFooter, .zen-active #tabBar {
+      opacity: 0.05;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .zen-active header:hover, .zen-active aside:hover, .zen-active #renameBar:hover, .zen-active #editorToolbar:hover, .zen-active #tabBar:hover {
+      opacity: 0.95;
+      pointer-events: auto;
+    }
+
+    /* Corkboard Sticky Note Card */
+    .sticky-note {
+      box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.12);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .sticky-note:hover {
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 4px 8px 18px rgba(0, 0, 0, 0.18);
+    }
+  </style>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:"SF Mono", Consolas, Monaco, monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0px}.bottom-5{bottom:1.25rem}.left-2{left:0.5rem}.right-10{right:2.5rem}.right-4{right:1rem}.right-5{right:1.25rem}.top-16{top:4rem}.top-2{top:0.5rem}.top-4{top:1rem}.z-10{z-index:10}.z-20{z-index:20}.z-30{z-index:30}.z-50{z-index:50}.mx-1{margin-left:0.25rem;margin-right:0.25rem}.mx-4{margin-left:1rem;margin-right:1rem}.mb-1{margin-bottom:0.25rem}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.ml-1{margin-left:0.25rem}.mr-1{margin-right:0.25rem}.mt-1{margin-top:0.25rem}.mt-2{margin-top:0.5rem}.mt-4{margin-top:1rem}.mt-6{margin-top:1.5rem}.ml-2{margin-left:0.5rem}.block{display:block}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-10{height:2.5rem}.h-12{height:3rem}.h-2{height:0.5rem}.h-2\.5{height:0.625rem}.h-20{height:5rem}.h-3{height:0.75rem}.h-4{height:1rem}.h-6{height:1.5rem}.h-64{height:16rem}.h-8{height:2rem}.h-9{height:2.25rem}.h-\[500px\]{height:500px}.h-full{height:100%}.h-screen{height:100vh}.max-h-36{max-height:9rem}.max-h-80{max-height:20rem}.max-h-\[90vh\]{max-height:90vh}.w-12{width:3rem}.w-2\.5{width:0.625rem}.w-3{width:0.75rem}.w-48{width:12rem}.w-64{width:16rem}.w-72{width:18rem}.w-80{width:20rem}.w-full{width:100%}.w-px{width:1px}.min-w-0{min-width:0px}.max-w-2xl{max-width:42rem}.max-w-\[130px\]{max-width:130px}.max-w-lg{max-width:32rem}.max-w-md{max-width:28rem}.max-w-xl{max-width:36rem}.max-w-xs{max-width:20rem}.max-w-\[120px\]{max-width:120px}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.cursor-pointer{cursor:pointer}.select-none{-webkit-user-select:none;user-select:none}.resize-none{resize:none}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.justify-around{justify-content:space-around}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.space-x-1 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.25rem * var(--tw-space-x-reverse));margin-left:calc(0.25rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-1\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.375rem * var(--tw-space-x-reverse));margin-left:calc(0.375rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-2 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.5rem * var(--tw-space-x-reverse));margin-left:calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-3 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.75rem * var(--tw-space-x-reverse));margin-left:calc(0.75rem * calc(1 - var(--tw-space-x-reverse)))}.space-y-1 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.space-y-0\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.125rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.125rem * var(--tw-space-y-reverse))}.overflow-auto{overflow:auto}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.whitespace-pre-wrap{white-space:pre-wrap}.rounded{border-radius:0.25rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-md{border-radius:0.375rem}.rounded-xl{border-radius:0.75rem}.rounded-t-md{border-top-left-radius:0.375rem;border-top-right-radius:0.375rem}.border{border-width:1px}.border-2{border-width:2px}.border-x{border-left-width:1px;border-right-width:1px}.border-b{border-bottom-width:1px}.border-b-2{border-bottom-width:2px}.border-l{border-left-width:1px}.border-r{border-right-width:1px}.border-t{border-top-width:1px}.border-dashed{border-style:dashed}.border-none{border-style:none}.border-amber-500\/20{border-color:rgb(245 158 11 / 0.2)}.border-amber-600{--tw-border-opacity:1;border-color:rgb(217 119 6 / var(--tw-border-opacity, 1))}.border-red-500\/20{border-color:rgb(239 68 68 / 0.2)}.border-transparent{border-color:transparent}.border-b-transparent{border-bottom-color:transparent}.bg-\[\#090D16\]{--tw-bg-opacity:1;background-color:rgb(9 13 22 / var(--tw-bg-opacity, 1))}.bg-\[\#121212\]{--tw-bg-opacity:1;background-color:rgb(18 18 18 / var(--tw-bg-opacity, 1))}.bg-\[\#18181B\]{--tw-bg-opacity:1;background-color:rgb(24 24 27 / var(--tw-bg-opacity, 1))}.bg-\[\#2E3440\]{--tw-bg-opacity:1;background-color:rgb(46 52 64 / var(--tw-bg-opacity, 1))}.bg-\[\#C0682C\]{--tw-bg-opacity:1;background-color:rgb(192 104 44 / var(--tw-bg-opacity, 1))}.bg-\[\#FAF6EF\]{--tw-bg-opacity:1;background-color:rgb(250 246 239 / var(--tw-bg-opacity, 1))}.bg-amber-500{--tw-bg-opacity:1;background-color:rgb(245 158 11 / var(--tw-bg-opacity, 1))}.bg-amber-500\/10{background-color:rgb(245 158 11 / 0.1)}.bg-blue-600{--tw-bg-opacity:1;background-color:rgb(37 99 235 / var(--tw-bg-opacity, 1))}.bg-orange-500{--tw-bg-opacity:1;background-color:rgb(249 115 22 / var(--tw-bg-opacity, 1))}.bg-red-500\/10{background-color:rgb(239 68 68 / 0.1)}.bg-red-500\/20{background-color:rgb(239 68 68 / 0.2)}.bg-sky-400{--tw-bg-opacity:1;background-color:rgb(56 189 248 / var(--tw-bg-opacity, 1))}.bg-stone-200{--tw-bg-opacity:1;background-color:rgb(231 229 228 / var(--tw-bg-opacity, 1))}.bg-teal-300{--tw-bg-opacity:1;background-color:rgb(94 234 212 / var(--tw-bg-opacity, 1))}.bg-transparent{background-color:transparent}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.p-0\.5{padding:0.125rem}.p-1{padding:0.25rem}.p-1\.5{padding:0.375rem}.p-2{padding:0.5rem}.p-2\.5{padding:0.625rem}.p-3{padding:0.75rem}.p-3\.5{padding:0.875rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.px-1{padding-left:0.25rem;padding-right:0.25rem}.px-1\.5{padding-left:0.375rem;padding-right:0.375rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-3\.5{padding-left:0.875rem;padding-right:0.875rem}.px-4{padding-left:1rem;padding-right:1rem}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.pb-2{padding-bottom:0.5rem}.pb-3{padding-bottom:0.75rem}.pl-3{padding-left:0.75rem}.pl-7{padding-left:1.75rem}.pr-2{padding-right:0.5rem}.pt-1{padding-top:0.25rem}.pt-2{padding-top:0.5rem}.pt-20{padding-top:5rem}.pl-4{padding-left:1rem}.text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}.font-mono{font-family:"SF Mono", Consolas, Monaco, monospace}.font-sans{font-family:Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-\[9px\]{font-size:9px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-normal{font-weight:400}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.italic{font-style:italic}.leading-relaxed{line-height:1.625}.tracking-tight{letter-spacing:-0.025em}.tracking-wider{letter-spacing:0.05em}.text-\[\#3D312E\]{--tw-text-opacity:1;color:rgb(61 49 46 / var(--tw-text-opacity, 1))}.text-amber-200{--tw-text-opacity:1;color:rgb(253 230 138 / var(--tw-text-opacity, 1))}.text-amber-600{--tw-text-opacity:1;color:rgb(217 119 6 / var(--tw-text-opacity, 1))}.text-amber-700{--tw-text-opacity:1;color:rgb(180 83 9 / var(--tw-text-opacity, 1))}.text-red-600{--tw-text-opacity:1;color:rgb(220 38 38 / var(--tw-text-opacity, 1))}.text-slate-100{--tw-text-opacity:1;color:rgb(241 245 249 / var(--tw-text-opacity, 1))}.text-stone-100{--tw-text-opacity:1;color:rgb(245 245 244 / var(--tw-text-opacity, 1))}.text-stone-900{--tw-text-opacity:1;color:rgb(28 25 23 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-amber-500{--tw-text-opacity:1;color:rgb(245 158 11 / var(--tw-text-opacity, 1))}.line-through{-webkit-text-decoration-line:line-through;text-decoration-line:line-through}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.opacity-75{opacity:0.75}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-200{transition-duration:200ms}.duration-300{transition-duration:300ms}.selection\:bg-amber-700 *::selection{--tw-bg-opacity:1;background-color:rgb(180 83 9 / var(--tw-bg-opacity, 1))}.selection\:text-white *::selection{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.selection\:bg-amber-700::selection{--tw-bg-opacity:1;background-color:rgb(180 83 9 / var(--tw-bg-opacity, 1))}.selection\:text-white::selection{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.hover\:text-amber-500:hover{--tw-text-opacity:1;color:rgb(245 158 11 / var(--tw-text-opacity, 1))}.hover\:text-red-500:hover{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity, 1))}.hover\:opacity-80:hover{opacity:0.8}.hover\:opacity-90:hover{opacity:0.9}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.group:hover .group-hover\:flex{display:flex}.dark\:bg-stone-700:is(.dark *){--tw-bg-opacity:1;background-color:rgb(68 64 60 / var(--tw-bg-opacity, 1))}.dark\:text-amber-400:is(.dark *){--tw-text-opacity:1;color:rgb(251 191 36 / var(--tw-text-opacity, 1))}@media (min-width: 640px){.sm\:inline{display:inline}.sm\:flex{display:flex}}@media (min-width: 768px){.md\:block{display:block}.md\:flex{display:flex}.md\:max-w-md{max-width:28rem}}</style></head>
+
+<body class="h-full font-sans theme-sepia antialiased selection:bg-amber-700 selection:text-white" id="appBody">
+
+  <!-- MAIN CONTAINER -->
+  <div class="flex flex-col h-screen overflow-hidden">
+
+    <!-- GLOBAL HEADER BAR -->
+    <header class="h-12 theme-bg-sidebar border-b theme-border px-3 flex items-center justify-between shrink-0 z-30 select-none">
+      
+      <!-- Branding & Navigation Toggle -->
+      <div class="flex items-center space-x-2">
+        <button onclick="toggleLeftSidebar()" class="btn-ultra p-1.5 rounded hover:theme-bg-sheet theme-text-muted hover:theme-text-main" title="Toggle Sidebar (Ctrl+B)">
+          <i class="fa-solid fa-sidebar text-sm"></i>
+        </button>
+
+        <div class="flex items-center space-x-2">
+          <span class="w-2.5 h-2.5 rounded-full theme-bg-accent shadow-xs"></span>
+          <h1 class="font-bold text-sm tracking-tight theme-text-main">PaperDesk <span class="font-normal opacity-75 text-xs bg-amber-500/10 text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded border border-amber-500/20">ULTRA</span></h1>
+        </div>
+
+        <div id="saveIndicator" class="md:flex items-center space-x-1.5 text-[11px] theme-text-muted border-l theme-border pl-3 ml-1 hidden">
+          <i class="fa-solid fa-circle-check text-[10px] theme-accent"></i>
+          <span id="saveStatusText">Auto-saved</span>
+        </div>
+      </div>
+
+      <!-- Quick Command Search Bar -->
+      <div class="hidden sm:flex items-center flex-1 max-w-xs mx-4">
+        <button onclick="openCommandPalette()" class="w-full flex items-center justify-between px-3 py-1 text-xs rounded-md theme-bg-main border theme-border theme-text-muted hover:theme-text-main shadow-xs">
+          <div class="flex items-center space-x-2 truncate">
+            <i class="fa-solid fa-magnifying-glass text-[10px]"></i>
+            <span class="truncate">Search notes &amp; actions...</span>
+          </div>
+          <kbd class="text-[10px] font-mono theme-bg-sheet px-1.5 py-0.5 rounded border theme-border">⌘K</kbd>
+        </button>
+      </div>
+
+      <!-- Right Toolbar Tools -->
+      <div class="flex items-center space-x-1.5">
+
+        <!-- Workspace Modes Bar -->
+        <div class="flex items-center p-0.5 theme-bg-main rounded-md border theme-border text-xs mr-1">
+          <button id="modeBtnEdit" onclick="setWorkspaceMode('edit')" class="px-2.5 py-0.5 rounded font-medium theme-text-muted hover:theme-text-main" title="Editor View">Edit</button>
+          <button id="modeBtnSepa" onclick="setWorkspaceMode('sepa')" class="px-2.5 py-0.5 rounded font-medium theme-text-main theme-bg-sheet shadow-xs" title="Sepa Dual Split View">Sepa</button>
+          <button id="modeBtnPrev" onclick="setWorkspaceMode('preview')" class="px-2.5 py-0.5 rounded font-medium theme-text-muted hover:theme-text-main" title="Reader View">Read</button>
+          <button id="modeBtnGraph" onclick="setWorkspaceMode('graph')" class="px-2.5 py-0.5 rounded font-medium theme-text-muted hover:theme-text-main" title="Knowledge Graph View"><i class="fa-solid fa-diagram-project text-[10px]"></i></button>
+          <button id="modeBtnCork" onclick="setWorkspaceMode('corkboard')" class="px-2.5 py-0.5 rounded font-medium theme-text-muted hover:theme-text-main" title="Corkboard Sticky Board"><i class="fa-solid fa-note-sticky text-[10px]"></i></button>
+          <button id="modeBtnFlash" onclick="setWorkspaceMode('flashcards')" class="px-2.5 py-0.5 rounded font-medium theme-text-muted hover:theme-text-main" title="Flashcard Deck"><i class="fa-solid fa-cards-blank text-[10px]"></i></button>
+        </div>
+
+        <!-- Ambient Noise Toggle -->
+        <button onclick="toggleAmbientNoise()" id="ambientBtn" class="btn-ultra p-1.5 rounded theme-bg-main border theme-border theme-text-muted hover:theme-text-main" title="Toggle Ambient Audio Noise">
+          <i class="fa-solid fa-headphones text-xs"></i>
+        </button>
+
+        <!-- Find & Replace Trigger -->
+        <button onclick="openFindReplaceModal()" class="btn-ultra p-1.5 rounded theme-bg-main border theme-border theme-text-muted hover:theme-text-main" title="Find &amp; Replace (Ctrl+F)">
+          <i class="fa-solid fa-magnifying-glass-arrow-right text-xs"></i>
+        </button>
+
+        <!-- Zen Focus Mode -->
+        <button onclick="toggleZenMode()" class="btn-ultra p-1.5 rounded theme-bg-main border theme-border theme-text-muted hover:theme-text-main" title="Zen Focus Mode (Alt+Z)">
+          <i class="fa-solid fa-compress text-xs"></i>
+        </button>
+
+        <!-- Right Inspector Panel Toggle -->
+        <button onclick="toggleRightInspector()" class="btn-ultra p-1.5 rounded theme-bg-main border theme-border theme-text-muted hover:theme-text-main" title="Toggle Inspector Tools">
+          <i class="fa-solid fa-sliders text-xs"></i>
+        </button>
+
+        <!-- Settings Trigger -->
+        <button onclick="openSettingsModal()" class="btn-ultra p-1.5 rounded theme-bg-main border theme-border theme-text-muted hover:theme-text-main" title="Settings &amp; Diagnostics">
+          <i class="fa-solid fa-gear text-xs"></i>
+        </button>
+
+      </div>
+    </header>
+
+    <!-- WORKSPACE MAIN -->
+    <div class="flex flex-1 overflow-hidden relative">
+
+      <!-- LEFT SIDEBAR: DIRECTORY TREE -->
+      <aside id="leftSidebar" class="w-64 theme-bg-sidebar border-r theme-border flex flex-col shrink-0 transition-all duration-200 z-20 select-none">
+        
+        <!-- Action Header -->
+        <div class="p-2.5 border-b theme-border flex items-center space-x-1.5">
+          <button onclick="createNewNote()" class="flex-1 btn-ultra flex items-center justify-center space-x-1.5 py-1.5 theme-bg-accent text-white rounded-md text-xs font-medium shadow-xs hover:opacity-90">
+            <i class="fa-solid fa-plus text-[10px]"></i>
+            <span>New Note</span>
+          </button>
+          <button onclick="createNewFolder()" class="btn-ultra px-2.5 py-1.5 theme-bg-main border theme-border hover:opacity-80 rounded-md text-xs theme-text-muted" title="Create Folder">
+            <i class="fa-solid fa-folder-plus"></i>
+          </button>
+          <button onclick="triggerImport()" class="btn-ultra px-2.5 py-1.5 theme-bg-main border theme-border hover:opacity-80 rounded-md text-xs theme-text-muted" title="Import Local File">
+            <i class="fa-solid fa-file-import"></i>
+          </button>
+        </div>
+
+        <!-- Filter Input -->
+        <div class="px-2.5 pt-2">
+          <div class="relative">
+            <input type="text" id="directorySearchInput" oninput="renderSidebarDirectory()" placeholder="Filter tree..." class="w-full py-1 pl-7 pr-2 text-xs rounded theme-bg-main border theme-border theme-text-main focus:outline-none">
+            <i class="fa-solid fa-filter absolute left-2 top-2 text-[10px] theme-text-muted"></i>
+          </div>
+        </div>
+
+        <!-- Directory Tabs -->
+        <div class="flex items-center justify-around border-b theme-border mt-2 text-[11px] font-medium theme-text-muted">
+          <button id="tabTreeBtn" onclick="setSidebarTab('tree')" class="py-1 px-2 border-b-2 border-amber-600 theme-text-main font-semibold">Tree</button>
+          <button id="tabFavsBtn" onclick="setSidebarTab('favorites')" class="py-1 px-2 border-b-2 border-transparent hover:theme-text-main">Favorites</button>
+          <button id="tabTagsBtn" onclick="setSidebarTab('tags')" class="py-1 px-2 border-b-2 border-transparent hover:theme-text-main">Tags</button>
+          <button id="tabTrashBtn" onclick="setSidebarTab('trash')" class="py-1 px-2 border-b-2 border-transparent hover:theme-text-main flex items-center space-x-1">
+            <span>Trash</span>
+            <span id="trashBadge" class="text-[9px] bg-red-500/20 text-red-600 px-1 rounded-full">0</span>
+          </button>
+        </div>
+
+        <!-- Directory Tree Container -->
+        <div id="sidebarTreeContainer" class="flex-1 overflow-y-auto p-2 space-y-1" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)"><div class="space-y-0.5">
+        <div class="group flex items-center justify-between px-2 py-1 rounded cursor-pointer hover:theme-bg-sheet text-xs theme-text-main font-semibold">
+          <div class="flex items-center space-x-1.5 truncate min-w-0 flex-1">
+            <i class="fa-regular fa-folder theme-accent text-xs"></i>
+            <span class="truncate" ondblclick="enableInlineFolderRename(event, 'folder-work')">Work &amp; Projects</span>
+          </div>
+          <div class="hidden group-hover:flex items-center space-x-1">
+            <button onclick="createNewNote('folder-work')" class="p-0.5 hover:theme-accent" title="New Note in Folder"><i class="fa-solid fa-plus"></i></button>
+            <button onclick="enableInlineFolderRename(event, 'folder-work')" class="p-0.5 hover:theme-accent" title="Rename Folder"><i class="fa-solid fa-pen"></i></button>
+            <button onclick="deleteFolder('folder-work')" class="p-0.5 hover:text-red-500" title="Delete Folder"><i class="fa-solid fa-trash-can"></i></button>
+          </div>
+        </div>
+        <div class="pl-3 border-l theme-border space-y-0.5 ml-2" id="folder-children-folder-work"><div class="group flex items-center justify-between px-2 py-1 rounded cursor-pointer text-xs transition-colors theme-bg-accent-light font-bold theme-text-main">
+        <div class="flex items-center space-x-2 truncate min-w-0 flex-1">
+          <i class="fa-regular fa-file-lines theme-accent text-xs"></i>
+          <span class="truncate" ondblclick="enableInlineNoteRename(event, 'note-welcome')">Welcome to PaperDesk Ultra.md</span>
+        </div>
+        <div class="hidden group-hover:flex items-center space-x-1">
+          <button onclick="event.stopPropagation(); enableInlineNoteRename(event, 'note-welcome')" class="p-0.5 hover:theme-accent" title="Rename Note"><i class="fa-solid fa-pen"></i></button>
+          <button onclick="event.stopPropagation(); toggleFavorite('note-welcome')" class="p-0.5 hover:text-amber-500">
+            <i class="fa-solid fa-star text-amber-500"></i>
+          </button>
+          <button onclick="event.stopPropagation(); moveNoteToTrash('note-welcome')" class="p-0.5 hover:text-red-500" title="Move to Trash">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      </div></div>
+      </div><div class="space-y-0.5">
+        <div class="group flex items-center justify-between px-2 py-1 rounded cursor-pointer hover:theme-bg-sheet text-xs theme-text-main font-semibold">
+          <div class="flex items-center space-x-1.5 truncate min-w-0 flex-1">
+            <i class="fa-regular fa-folder theme-accent text-xs"></i>
+            <span class="truncate" ondblclick="enableInlineFolderRename(event, 'folder-personal')">Personal Notes</span>
+          </div>
+          <div class="hidden group-hover:flex items-center space-x-1">
+            <button onclick="createNewNote('folder-personal')" class="p-0.5 hover:theme-accent" title="New Note in Folder"><i class="fa-solid fa-plus"></i></button>
+            <button onclick="enableInlineFolderRename(event, 'folder-personal')" class="p-0.5 hover:theme-accent" title="Rename Folder"><i class="fa-solid fa-pen"></i></button>
+            <button onclick="deleteFolder('folder-personal')" class="p-0.5 hover:text-red-500" title="Delete Folder"><i class="fa-solid fa-trash-can"></i></button>
+          </div>
+        </div>
+        <div class="pl-3 border-l theme-border space-y-0.5 ml-2" id="folder-children-folder-personal"><div class="group flex items-center justify-between px-2 py-1 rounded cursor-pointer text-xs transition-colors hover:theme-bg-sheet theme-text-main">
+        <div class="flex items-center space-x-2 truncate min-w-0 flex-1">
+          <i class="fa-regular fa-file-code theme-text-muted text-xs"></i>
+          <span class="truncate" ondblclick="enableInlineNoteRename(event, 'note-flashcards')">Quick Reference.txt</span>
+        </div>
+        <div class="hidden group-hover:flex items-center space-x-1">
+          <button onclick="event.stopPropagation(); enableInlineNoteRename(event, 'note-flashcards')" class="p-0.5 hover:theme-accent" title="Rename Note"><i class="fa-solid fa-pen"></i></button>
+          <button onclick="event.stopPropagation(); toggleFavorite('note-flashcards')" class="p-0.5 hover:text-amber-500">
+            <i class="fa-regular fa-star"></i>
+          </button>
+          <button onclick="event.stopPropagation(); moveNoteToTrash('note-flashcards')" class="p-0.5 hover:text-red-500" title="Move to Trash">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      </div></div>
+      </div></div>
+
+        <!-- Drag & Drop Import Overlay -->
+        <div id="dragOverlay" class="hidden absolute inset-0 theme-bg-main/95 backdrop-blur-xs border-2 border-dashed theme-border flex flex-col items-center justify-center p-4 text-center z-30 pointer-events-none">
+          <i class="fa-solid fa-cloud-arrow-up text-3xl theme-accent mb-2"></i>
+          <p class="text-xs font-semibold theme-text-main">Drop files to import into directory</p>
+          <p class="text-[10px] theme-text-muted mt-1">Supports .md, .txt, .json, .csv</p>
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="p-2 border-t theme-border theme-bg-sheet/50 flex items-center justify-between text-[11px] theme-text-muted">
+          <span id="sidebarNoteCount">2 notes</span>
+          <div class="flex items-center space-x-2">
+            <button onclick="exportAllZip()" class="hover:theme-accent font-medium" title="Export all notes as .ZIP">
+              <i class="fa-solid fa-file-zipper text-xs"></i> ZIP
+            </button>
+            <button onclick="exportDatabaseJSON()" class="hover:theme-accent font-medium" title="Backup Database (.json)">
+              <i class="fa-solid fa-database text-xs"></i> Backup
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- HIDDEN FILE INPUT -->
+      <input type="file" id="fileInput" multiple="" accept=".md,.txt,.json,.csv,.html,.js,.css,.py,.sql" class="hidden" onchange="handleFileImport(event)">
+
+      <!-- MAIN EDITOR WORKSPACE -->
+      <main id="mainWorkspace" class="flex-1 flex flex-col overflow-hidden relative">
+
+        <!-- DEDICATED RENAME BAR -->
+        <div id="renameBar" class="h-9 theme-bg-sheet border-b theme-border px-3 flex items-center justify-between shrink-0 text-xs select-none">
+          <div class="flex items-center space-x-2 flex-1 min-w-0">
+            <span class="theme-text-muted font-semibold flex items-center space-x-1 shrink-0">
+              <i class="fa-solid fa-pen-to-square theme-accent"></i>
+              <span class="hidden sm:inline">Rename:</span>
+            </span>
+            <input type="text" id="renameBarTitleInput" oninput="handleRenameBarChange()" placeholder="Document title..." class="py-0.5 px-2 rounded theme-bg-main border theme-border theme-text-main font-bold focus:outline-none flex-1 max-w-xs md:max-w-md">
+            <select id="renameBarExtSelect" onchange="handleRenameBarChange()" class="py-0.5 px-1.5 rounded theme-bg-main border theme-border theme-text-main font-mono text-[11px] focus:outline-none">
+              <option value=".md">.md</option>
+              <option value=".txt">.txt</option>
+              <option value=".html">.html</option>
+              <option value=".js">.js</option>
+              <option value=".json">.json</option>
+              <option value=".css">.css</option>
+              <option value=".csv">.csv</option>
+              <option value=".py">.py</option>
+              <option value=".sql">.sql</option>
+            </select>
+            <select id="renameBarFolderSelect" onchange="handleRenameBarFolderChange()" class="hidden md:block py-0.5 px-1.5 rounded theme-bg-main border theme-border theme-text-muted text-[11px] focus:outline-none max-w-[130px] truncate"><option value="">Root Folder</option><option value="folder-work">Work &amp; Projects</option><option value="folder-personal">Personal Notes</option></select>
+          </div>
+          <div class="flex items-center space-x-2 shrink-0 text-[11px] theme-text-muted">
+            <span id="renameBarStatus" class="italic hidden sm:inline">Synced</span>
+            <button onclick="saveActiveNoteTitleFromRenameBar()" class="btn-ultra px-2.5 py-0.5 theme-bg-accent text-white rounded text-[11px] font-medium hover:opacity-90">
+              Apply
+            </button>
+          </div>
+        </div>
+
+        <!-- DOCUMENT TAB BAR -->
+        <div id="tabBar" class="h-8 theme-bg-sidebar border-b theme-border flex items-center px-2 space-x-1 overflow-x-auto shrink-0 select-none"><div class="group flex items-center space-x-2 px-3 py-1 rounded-t-md text-xs cursor-pointer border-t border-x theme-border theme-bg-main font-bold theme-text-main border-b-transparent">
+          <i class="fa-regular fa-file-lines theme-accent text-[10px]"></i>
+          <span class="truncate max-w-[120px]">Welcome to PaperDesk Ultra.md</span>
+          <button onclick="event.stopPropagation(); closeTab('note-welcome')" class="p-0.5 hover:text-red-500 rounded text-[10px]" title="Close Tab">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div><div class="group flex items-center space-x-2 px-3 py-1 rounded-t-md text-xs cursor-pointer border-t border-x theme-border theme-bg-sheet theme-text-muted hover:theme-text-main">
+          <i class="fa-regular fa-file-code text-[10px]"></i>
+          <span class="truncate max-w-[120px]">Quick Reference.txt</span>
+          <button onclick="event.stopPropagation(); closeTab('note-flashcards')" class="p-0.5 hover:text-red-500 rounded text-[10px]" title="Close Tab">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div><button class="px-2 py-1 text-xs theme-text-muted hover:theme-text-main rounded hover:theme-bg-sheet" title="Create &amp; Open New Note"><i class="fa-solid fa-plus"></i></button></div>
+
+        <!-- MULTI-PANE CONTAINER -->
+        <div class="flex-1 flex overflow-hidden relative">
+
+          <!-- PANE 1: EDITOR / PRIMARY VIEW -->
+          <section id="pane1" class="flex-1 flex flex-col min-w-0 theme-bg-main transition-all relative">
+            
+            <!-- Pane 1 Header / Meta Bar -->
+            <div class="h-10 border-b theme-border px-3 theme-bg-sheet flex items-center justify-between shrink-0 z-10">
+              <div class="flex items-center space-x-2 min-w-0 flex-1">
+                <button onclick="toggleActiveNoteFavorite()" class="theme-text-muted hover:text-amber-500" title="Favorite / Pin Note">
+                  <i id="favStarIcon" class="fa-solid fa-star text-amber-500"></i>
+                </button>
+
+                <!-- Document Title Input -->
+                <input type="text" id="noteTitleInput" oninput="handleTitleChange(this.value)" class="bg-transparent text-sm font-bold theme-text-main focus:outline-none truncate max-w-xs md:max-w-md" placeholder="Untitled Note">
+                
+                <span id="lockedBadge" class="hidden text-[10px] bg-red-500/10 text-red-600 border border-red-500/20 px-1.5 py-0.5 rounded flex items-center space-x-1">
+                  <i class="fa-solid fa-lock text-[9px]"></i>
+                  <span>Protected</span>
+                </span>
+              </div>
+
+              <!-- Note Utility Actions -->
+              <div class="flex items-center space-x-1">
+                <button onclick="toggleSpeechRecognition()" id="dictateBtn" class="btn-ultra p-1.5 rounded hover:theme-bg-main theme-text-muted hover:theme-text-main" title="Voice Dictation">
+                  <i class="fa-solid fa-microphone text-xs"></i>
+                </button>
+                <button onclick="speakActiveNote()" id="speakBtn" class="btn-ultra p-1.5 rounded hover:theme-bg-main theme-text-muted hover:theme-text-main" title="Read Aloud">
+                  <i class="fa-solid fa-volume-high text-xs"></i>
+                </button>
+                <button onclick="promptNoteLock()" class="btn-ultra p-1.5 rounded hover:theme-bg-main theme-text-muted hover:theme-text-main" title="Passcode Lock Note">
+                  <i class="fa-solid fa-key text-xs"></i>
+                </button>
+                <button onclick="openSnapshotsModal()" class="btn-ultra p-1.5 rounded hover:theme-bg-main theme-text-muted hover:theme-text-main" title="Version History">
+                  <i class="fa-solid fa-clock-rotate-left text-xs"></i>
+                </button>
+                <button onclick="downloadActiveNote('md')" class="btn-ultra p-1.5 rounded hover:theme-bg-main theme-text-muted hover:theme-text-main" title="Download File">
+                  <i class="fa-solid fa-download text-xs"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Formatting Toolbar -->
+            <div id="editorToolbar" class="h-9 border-b theme-border px-3 theme-bg-main flex items-center space-x-1 overflow-x-auto text-xs shrink-0 select-none">
+              <button onclick="insertFormat('bold')" class="p-1 px-2 rounded hover:theme-bg-sheet theme-text-muted font-bold" title="Bold">B</button>
+              <button onclick="insertFormat('italic')" class="p-1 px-2 rounded hover:theme-bg-sheet theme-text-muted italic" title="Italic">I</button>
+              <button onclick="insertFormat('strikethrough')" class="p-1 px-2 rounded hover:theme-bg-sheet theme-text-muted line-through" title="Strikethrough">S</button>
+              <div class="h-4 w-px theme-border border-r mx-1"></div>
+              <button onclick="insertFormat('h1')" class="p-1 px-1.5 rounded hover:theme-bg-sheet theme-text-muted font-bold" title="Heading 1">H1</button>
+              <button onclick="insertFormat('h2')" class="p-1 px-1.5 rounded hover:theme-bg-sheet theme-text-muted font-bold" title="Heading 2">H2</button>
+              <button onclick="insertFormat('h3')" class="p-1 px-1.5 rounded hover:theme-bg-sheet theme-text-muted font-bold" title="Heading 3">H3</button>
+              <div class="h-4 w-px theme-border border-r mx-1"></div>
+              <button onclick="insertFormat('quote')" class="p-1 px-1.5 rounded hover:theme-bg-sheet theme-text-muted" title="Blockquote"><i class="fa-solid fa-quote-right"></i></button>
+              <button onclick="insertFormat('code')" class="p-1 px-1.5 rounded hover:theme-bg-sheet theme-text-muted" title="Code Block"><i class="fa-solid fa-code"></i></button>
+              <button onclick="insertFormat('link')" class="p-1 px-1.5 rounded hover:theme-bg-sheet theme-text-muted" title="Insert Link"><i class="fa-solid fa-link"></i></button>
+              <button onclick="insertFormat('table')" class="p-1 px-1.5 rounded hover:theme-bg-sheet theme-text-muted" title="Insert Table"><i class="fa-solid fa-table"></i></button>
+              <button onclick="insertFormat('task')" class="p-1 px-1.5 rounded hover:theme-bg-sheet theme-text-muted" title="Checklist Task"><i class="fa-regular fa-square-check"></i></button>
+              <button onclick="insertFormat('wikilink')" class="p-1 px-1.5 rounded hover:theme-bg-sheet theme-text-muted" title="Wiki Link [[Title]]"><i class="fa-solid fa-link-slash"></i></button>
+              <button onclick="insertFormat('math')" class="p-1 px-1.5 rounded hover:theme-bg-sheet theme-text-muted" title="LaTeX Math Formula"><i class="fa-solid fa-calculator"></i></button>
+            </div>
+
+            <!-- Content Area -->
+            <div class="flex-1 flex overflow-hidden relative justify-center">
+              
+              <!-- Lock Screen Overlay -->
+              <div id="passcodeLockOverlay" class="hidden absolute inset-0 theme-bg-main z-20 flex flex-col items-center justify-center p-6 text-center">
+                <div class="w-12 h-12 rounded-full theme-bg-accent-light text-amber-600 flex items-center justify-center text-xl mb-3">
+                  <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="font-bold text-lg theme-text-main mb-1">Note Protected</h3>
+                <p class="text-xs theme-text-muted mb-4">Enter passcode to unlock and view this note.</p>
+                <div class="flex items-center space-x-2 max-w-xs w-full">
+                  <input type="password" id="passcodeInput" placeholder="Enter Passcode..." class="flex-1 py-1.5 px-3 rounded theme-bg-sheet border theme-border text-xs focus:outline-none">
+                  <button onclick="unlockActiveNote()" class="px-3 py-1.5 theme-bg-accent text-white rounded text-xs font-semibold">Unlock</button>
+                </div>
+              </div>
+
+              <!-- Markdown Source Textarea -->
+              <textarea id="pane1Editor" oninput="handleContentInput()" onscroll="syncEditorScroll()" class="w-full h-full p-6 theme-bg-main theme-text-main focus:outline-none resize-none leading-relaxed border-none font-sans" placeholder="Write your note in Markdown..." style="font-size: 14px;"></textarea>
+              
+              <!-- Reader View Preview -->
+              <div id="pane1Preview" class="hidden w-full h-full p-6 theme-bg-main overflow-y-auto prose-ultra text-sm"><h1>Welcome to PaperDesk Ultra ✒️</h1>
+<p><strong>PaperDesk Ultra</strong> is your tactile, distraction-free note-taking studio and editorial workspace.</p>
+<hr>
+<h3>Key Capabilities</h3>
+<ol>
+<li>📜 <strong>Sepa Dual Split View</strong>: Click <strong>Sepa</strong> at the top right or press <code>Alt+S</code> to view live markdown side-by-side with synchronized scrolling.</li>
+<li>📂 <strong>Multi-Tab Workspace</strong>: Open multiple notes simultaneously in top tab bar.</li>
+<li>📁 <strong>Virtual Folder Hierarchy</strong>: Rename notes inline, create subfolders, drop files into directories, or favorite notes.</li>
+<li>🕸️ <strong>Knowledge Graph Network</strong>: View interactive connections between notes via <code>#tags</code> or <code><a class="wiki-link" onclick="openWikiLink('Wiki Links')">Wiki Links</a></code>.</li>
+<li>📌 <strong>Corkboard Visual Board</strong>: Drag and create visual sticky notes.</li>
+<li>🎴 <strong>Flashcard Study Deck</strong>: Write questions with <code>Q:</code> and <code>A:</code> syntax to generate flip cards automatically.</li>
+<li>🎧 <strong>Synthesized Ambient Noise</strong>: Web Audio API ambient rain sound generator.</li>
+</ol>
+<p>Try creating a link to another note using double brackets like <a class="wiki-link" onclick="openWikiLink('Quick Reference.txt')">Quick Reference.txt</a>!</p>
+</div>
+
+            </div>
+
+            <!-- Pane 1 Footer Bar -->
+            <div id="editorFooter" class="h-6 border-t theme-border px-3 theme-bg-sheet flex items-center justify-between text-[11px] theme-text-muted shrink-0 select-none">
+              <div id="pane1LiveStats">141 words · 974 chars · ~1 min read</div>
+              <div class="flex items-center space-x-3">
+                <span id="lineColIndicator">Ln 1, Col 1</span>
+                <span class="font-mono uppercase opacity-75">Markdown</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- SEPA MODE SPLIT PANE 2 (LIVE RENDERED) -->
+          <section id="pane2" class="flex-1 flex-col min-w-0 theme-bg-main border-l theme-border transition-all">
+            <div class="h-10 border-b theme-border px-3 theme-bg-sheet flex items-center justify-between shrink-0">
+              <div class="flex items-center space-x-2 min-w-0 flex-1">
+                <i class="fa-solid fa-eye theme-accent text-xs"></i>
+                <span class="text-xs font-bold theme-text-main">Sepa Live Preview</span>
+              </div>
+              <span class="text-[10px] theme-text-muted font-mono uppercase">Rendered Output</span>
+            </div>
+
+            <div id="pane2Preview" onscroll="syncPreviewScroll()" class="flex-1 w-full h-full p-6 theme-bg-main overflow-y-auto prose-ultra text-sm"><h1>Welcome to PaperDesk Ultra ✒️</h1>
+<p><strong>PaperDesk Ultra</strong> is your tactile, distraction-free note-taking studio and editorial workspace.</p>
+<hr>
+<h3>Key Capabilities</h3>
+<ol>
+<li>📜 <strong>Sepa Dual Split View</strong>: Click <strong>Sepa</strong> at the top right or press <code>Alt+S</code> to view live markdown side-by-side with synchronized scrolling.</li>
+<li>📂 <strong>Multi-Tab Workspace</strong>: Open multiple notes simultaneously in top tab bar.</li>
+<li>📁 <strong>Virtual Folder Hierarchy</strong>: Rename notes inline, create subfolders, drop files into directories, or favorite notes.</li>
+<li>🕸️ <strong>Knowledge Graph Network</strong>: View interactive connections between notes via <code>#tags</code> or <code><a class="wiki-link" onclick="openWikiLink('Wiki Links')">Wiki Links</a></code>.</li>
+<li>📌 <strong>Corkboard Visual Board</strong>: Drag and create visual sticky notes.</li>
+<li>🎴 <strong>Flashcard Study Deck</strong>: Write questions with <code>Q:</code> and <code>A:</code> syntax to generate flip cards automatically.</li>
+<li>🎧 <strong>Synthesized Ambient Noise</strong>: Web Audio API ambient rain sound generator.</li>
+</ol>
+<p>Try creating a link to another note using double brackets like <a class="wiki-link" onclick="openWikiLink('Quick Reference.txt')">Quick Reference.txt</a>!</p>
+</div>
+
+            <div class="h-6 border-t theme-border px-3 theme-bg-sheet flex items-center justify-end text-[11px] theme-text-muted shrink-0">
+              <span>Synchronized View</span>
+            </div>
+          </section>
+
+          <!-- KNOWLEDGE GRAPH CANVAS VIEW -->
+          <section id="graphWorkspace" class="hidden flex-1 flex-col theme-bg-main relative">
+            <div class="h-10 border-b theme-border px-4 theme-bg-sheet flex items-center justify-between shrink-0">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-diagram-project theme-accent text-xs"></i>
+                <span class="text-xs font-bold theme-text-main">Knowledge Graph Network</span>
+              </div>
+              <div class="flex items-center space-x-3">
+                <span class="text-[11px] theme-text-muted hidden sm:inline">Click node to open note</span>
+                <button onclick="exitOverlayView()" class="btn-ultra px-3.5 py-1.5 theme-bg-sheet border-2 theme-border hover:theme-bg-main rounded text-xs font-bold theme-text-main flex items-center space-x-1.5 shadow-xs">
+                  <i class="fa-solid fa-arrow-left text-xs theme-accent"></i>
+                  <span>← Back to Document Editor (Esc)</span>
+                </button>
+              </div>
+            </div>
+            <div class="flex-1 relative overflow-hidden">
+              <canvas id="graphCanvas" class="w-full h-full block"></canvas>
+            </div>
+          </section>
+
+          <!-- CORKBOARD STICKY CANVAS VIEW -->
+          <section id="corkboardWorkspace" class="hidden flex-1 flex-col theme-bg-main relative overflow-hidden p-6">
+            <div class="flex items-center justify-between mb-4 border-b theme-border pb-3">
+              <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-note-sticky theme-accent text-sm"></i>
+                <span class="text-sm font-bold theme-text-main">Corkboard Sticky Visual Board</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <button onclick="addCorkboardSticky()" class="btn-ultra px-3 py-1.5 theme-bg-accent text-white rounded text-xs font-medium shadow-xs"><i class="fa-solid fa-plus mr-1"></i> Add Sticky Note</button>
+                <button onclick="exitOverlayView()" class="btn-ultra px-3.5 py-1.5 theme-bg-sheet border-2 theme-border hover:theme-bg-main rounded text-xs font-bold theme-text-main flex items-center space-x-1.5 shadow-xs">
+                  <i class="fa-solid fa-arrow-left text-xs theme-accent"></i>
+                  <span>← Back to Document Editor (Esc)</span>
+                </button>
+              </div>
+            </div>
+            <div id="corkboardContainer" class="flex-1 relative border-2 border-dashed theme-border rounded-xl p-4 overflow-auto flex flex-wrap gap-4 items-start">
+              <!-- Sticky Notes Dynamic Rendering -->
+            </div>
+          </section>
+
+          <!-- FLASHCARD STUDY VIEW -->
+          <section id="flashcardWorkspace" class="hidden flex-1 flex-col theme-bg-main p-6 items-center justify-center overflow-y-auto relative">
+            <button onclick="exitOverlayView()" class="absolute top-4 right-4 btn-ultra px-3.5 py-1.5 theme-bg-sheet border-2 theme-border hover:theme-bg-main rounded text-xs font-bold theme-text-main flex items-center space-x-1.5 shadow-xs">
+              <i class="fa-solid fa-arrow-left text-xs theme-accent"></i>
+              <span>← Back to Document Editor (Esc)</span>
+            </button>
+            <div id="flashcardContainer" class="w-full max-w-md flex flex-col items-center">
+              <div id="flashcardCard" onclick="flipFlashcard()" class="w-full h-64 theme-bg-sheet border-2 theme-border rounded-xl shadow-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer select-none transition-transform duration-300">
+                <div id="cardContent" class="text-base font-semibold theme-text-main">
+                  Click "Start Flashcards" to extract cards from Q: / A: syntax in active note.
+                </div>
+                <div class="mt-4 text-[11px] theme-text-muted uppercase tracking-wider font-mono">
+                  <span id="cardFlipHint">Click card to flip answer</span>
+                </div>
+              </div>
+
+              <div class="flex items-center space-x-3 mt-6">
+                <button onclick="prevFlashcard()" class="btn-ultra px-3 py-1.5 theme-bg-sheet border theme-border rounded text-xs theme-text-main"><i class="fa-solid fa-arrow-left mr-1"></i> Prev</button>
+                <span id="cardProgress" class="text-xs font-medium theme-text-muted">Card 0 of 0</span>
+                <button onclick="nextFlashcard()" class="btn-ultra px-3 py-1.5 theme-bg-sheet border theme-border rounded text-xs theme-text-main">Next <i class="fa-solid fa-arrow-right ml-1"></i></button>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </main>
+
+      <!-- RIGHT INSPECTOR & UTILITIES -->
+      <aside id="rightInspector" class="w-72 theme-bg-sidebar border-l theme-border flex flex-col shrink-0 transition-all duration-200 z-20 select-none">
+        <div class="p-2.5 border-b theme-border flex items-center justify-between">
+          <span class="text-xs font-bold theme-text-main flex items-center space-x-1.5">
+            <i class="fa-solid fa-sliders theme-accent text-xs"></i>
+            <span>Inspector &amp; Tools</span>
+          </span>
+          <button onclick="toggleRightInspector()" class="theme-text-muted hover:theme-text-main text-xs">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-3 space-y-4 text-xs">
+          
+          <!-- Table of Contents Outline -->
+          <div class="theme-bg-main p-3 rounded-lg border theme-border space-y-2">
+            <span class="font-semibold theme-text-main flex items-center space-x-1">
+              <i class="fa-solid fa-list-ol theme-accent text-xs"></i>
+              <span>Table of Contents Outline</span>
+            </span>
+            <div id="tocContainer" class="space-y-1 text-[11px] theme-text-muted max-h-36 overflow-y-auto"><div class="cursor-pointer hover:theme-accent truncate font-semibold">Welcome to PaperDesk Ultra ✒️</div><div class="cursor-pointer hover:theme-accent truncate pl-4">Key Capabilities</div></div>
+          </div>
+
+          <!-- Daily Writing Goal Progress -->
+          <div class="theme-bg-main p-3 rounded-lg border theme-border space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-semibold theme-text-main">Daily Writing Goal</span>
+              <span id="goalPercentText" class="font-bold theme-accent">28%</span>
+            </div>
+            <div class="w-full bg-stone-200 dark:bg-stone-700 h-2 rounded-full overflow-hidden">
+              <div id="goalProgressBar" class="theme-bg-accent h-full transition-all duration-300" style="width: 28%;"></div>
+            </div>
+            <div class="flex items-center justify-between text-[11px] theme-text-muted">
+              <span id="wordsWrittenToday">141 words today</span>
+              <span>Goal: <input type="number" id="dailyGoalInput" value="500" onchange="updateDailyGoal(this.value)" class="w-12 bg-transparent text-right font-semibold theme-text-main focus:outline-none"></span>
+            </div>
+          </div>
+
+          <!-- Pomodoro Focus Timer -->
+          <div class="theme-bg-main p-3 rounded-lg border theme-border space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-semibold theme-text-main flex items-center space-x-1">
+                <i class="fa-solid fa-stopwatch theme-accent text-xs"></i>
+                <span>Pomodoro Focus</span>
+              </span>
+              <span id="pomoModeBadge" class="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded theme-bg-sheet border theme-border">Work</span>
+            </div>
+            <div class="text-center py-2">
+              <div id="pomoTimerDisplay" class="text-2xl font-bold font-mono tracking-wider theme-text-main">25:00</div>
+            </div>
+            <div class="flex items-center justify-center space-x-2">
+              <button onclick="togglePomodoro()" id="pomoStartBtn" class="px-3 py-1 theme-bg-accent text-white rounded text-xs font-semibold">Start</button>
+              <button onclick="resetPomodoro()" class="px-3 py-1 theme-bg-sheet border theme-border rounded text-xs theme-text-muted hover:theme-text-main">Reset</button>
+            </div>
+          </div>
+
+          <!-- Scratchpad Drawer -->
+          <div class="theme-bg-main p-3 rounded-lg border theme-border space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-semibold theme-text-main flex items-center space-x-1">
+                <i class="fa-solid fa-sticky-note theme-accent text-xs"></i>
+                <span>Scratchpad</span>
+              </span>
+              <button onclick="clearScratchpad()" class="text-[10px] theme-text-muted hover:text-red-500">Clear</button>
+            </div>
+            <textarea id="scratchpadInput" oninput="saveScratchpad()" placeholder="Temporary notes, clipboard dump..." class="w-full h-20 p-2 text-xs rounded theme-bg-sheet border theme-border theme-text-main focus:outline-none resize-none font-mono"></textarea>
+          </div>
+
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- FIND & REPLACE MODAL -->
+  <div id="findReplaceModal" class="hidden fixed top-16 right-10 z-50 theme-bg-card border-2 theme-border rounded-xl shadow-2xl p-4 w-80 space-y-3">
+    <div class="flex items-center justify-between border-b theme-border pb-2">
+      <span class="font-bold text-xs theme-text-main">Find &amp; Replace</span>
+      <button onclick="closeFindReplaceModal()" class="theme-text-muted hover:theme-text-main text-xs"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="space-y-2 text-xs">
+      <input type="text" id="findInput" placeholder="Find text..." class="w-full p-1.5 rounded theme-bg-sheet border theme-border theme-text-main focus:outline-none">
+      <input type="text" id="replaceInput" placeholder="Replace with..." class="w-full p-1.5 rounded theme-bg-sheet border theme-border theme-text-main focus:outline-none">
+      <div class="flex items-center justify-between pt-1">
+        <button onclick="executeReplace(false)" class="px-2.5 py-1 theme-bg-sheet border theme-border rounded font-medium theme-text-main">Replace</button>
+        <button onclick="executeReplace(true)" class="px-2.5 py-1 theme-bg-accent text-white rounded font-medium">Replace All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMAND PALETTE MODAL -->
+  <div id="commandPaletteModal" class="hidden fixed inset-0 z-50 theme-bg-main/80 backdrop-blur-xs flex items-start justify-center pt-20 p-4">
+    <div class="w-full max-w-lg theme-bg-card border-2 theme-border rounded-xl shadow-2xl overflow-hidden flex flex-col">
+      <div class="p-3 border-b theme-border flex items-center space-x-2">
+        <i class="fa-solid fa-magnifying-glass theme-text-muted text-sm"></i>
+        <input type="text" id="paletteInput" oninput="filterPaletteResults(this.value)" placeholder="Type a command or note title..." class="w-full bg-transparent text-sm theme-text-main focus:outline-none">
+        <kbd class="text-[10px] font-mono theme-bg-sheet px-1.5 py-0.5 rounded border theme-border">ESC</kbd>
+      </div>
+      <div id="paletteResults" class="max-h-80 overflow-y-auto p-1.5 space-y-1 text-xs"></div>
+    </div>
+  </div>
+
+  <!-- SNAPSHOTS / VERSION HISTORY MODAL -->
+  <div id="snapshotsModal" class="hidden fixed inset-0 z-50 theme-bg-main/80 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl theme-bg-card border-2 theme-border rounded-xl shadow-2xl overflow-hidden flex flex-col h-[500px]">
+      <div class="p-3 border-b theme-border flex items-center justify-between">
+        <span class="font-bold text-sm theme-text-main flex items-center space-x-1.5">
+          <i class="fa-solid fa-clock-rotate-left theme-accent"></i>
+          <span>Version History &amp; Snapshots</span>
+        </span>
+        <button onclick="closeSnapshotsModal()" class="theme-text-muted hover:theme-text-main"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="flex-1 flex overflow-hidden">
+        <div id="snapshotsList" class="w-48 border-r theme-border overflow-y-auto p-2 space-y-1 text-xs"></div>
+        <div id="snapshotPreview" class="flex-1 p-4 overflow-y-auto font-mono text-xs theme-bg-sheet whitespace-pre-wrap">Select a snapshot on the left to preview...</div>
+      </div>
+      <div class="p-3 border-t theme-border flex items-center justify-between theme-bg-sheet">
+        <button onclick="createManualSnapshot()" class="btn-ultra px-3 py-1.5 theme-bg-main border theme-border text-xs rounded font-medium">Create Snapshot Now</button>
+        <button id="restoreSnapshotBtn" onclick="restoreSelectedSnapshot()" class="hidden btn-ultra px-3 py-1.5 theme-bg-accent text-white text-xs rounded font-medium">Restore This Version</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW NOTE CREATION MODAL -->
+  <div id="newNoteModal" class="hidden fixed inset-0 z-50 theme-bg-main/80 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="w-full max-w-md theme-bg-card border-2 theme-border rounded-xl shadow-2xl overflow-hidden flex flex-col">
+      <div class="p-3.5 border-b theme-border flex items-center justify-between">
+        <span class="font-bold text-sm theme-text-main flex items-center space-x-2">
+          <i class="fa-solid fa-file-circle-plus theme-accent"></i>
+          <span>Create New Note / File</span>
+        </span>
+        <button onclick="closeNewNoteModal()" class="theme-text-muted hover:theme-text-main"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="p-4 space-y-4 text-xs">
+        <div>
+          <label class="font-bold theme-text-main block mb-1">Note Title</label>
+          <input type="text" id="newNoteTitleInput" placeholder="e.g. Project Architecture, Meeting Notes" class="w-full p-2 rounded theme-bg-sheet border theme-border theme-text-main focus:outline-none text-xs font-semibold">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="font-bold theme-text-main block mb-1">File Extension</label>
+            <select id="newNoteExtSelect" class="w-full p-2 rounded theme-bg-sheet border theme-border theme-text-main font-mono text-xs focus:outline-none">
+              <option value=".md">.md (Markdown)</option>
+              <option value=".txt">.txt (Plain Text)</option>
+              <option value=".html">.html (HTML Webpage)</option>
+              <option value=".js">.js (JavaScript)</option>
+              <option value=".json">.json (JSON Data)</option>
+              <option value=".css">.css (Stylesheet)</option>
+              <option value=".csv">.csv (Spreadsheet)</option>
+              <option value=".py">.py (Python Script)</option>
+              <option value=".sql">.sql (SQL Query)</option>
+            </select>
+          </div>
+          <div>
+            <label class="font-bold theme-text-main block mb-1">Folder Destination</label>
+            <select id="newNoteFolderSelect" class="w-full p-2 rounded theme-bg-sheet border theme-border theme-text-main text-xs focus:outline-none">
+              <option value="">Root Directory</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="p-3 border-t theme-border flex items-center justify-end space-x-2 theme-bg-sheet">
+        <button onclick="closeNewNoteModal()" class="px-3 py-1.5 theme-bg-main border theme-border rounded text-xs font-medium theme-text-muted hover:theme-text-main">Cancel</button>
+        <button onclick="confirmCreateNote()" class="px-4 py-1.5 theme-bg-accent text-white rounded text-xs font-semibold hover:opacity-90">Create Note</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div id="settingsModal" class="fixed inset-0 z-50 theme-bg-main/80 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="w-full max-w-xl theme-bg-card border-2 theme-border rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="p-3.5 border-b theme-border flex items-center justify-between">
+        <span class="font-bold text-sm theme-text-main flex items-center space-x-1.5">
+          <i class="fa-solid fa-gear theme-accent"></i>
+          <span>PaperDesk Settings &amp; Diagnostics</span>
+        </span>
+        <button onclick="closeSettingsModal()" class="theme-text-muted hover:theme-text-main"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <div class="flex-1 overflow-y-auto p-5 space-y-6 text-xs">
+        <div>
+          <label class="font-bold theme-text-main block mb-2">Color Theme Palette</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="setTheme('sepia')" class="p-2.5 rounded border theme-border flex items-center space-x-2 text-left bg-[#FAF6EF] text-[#3D312E]">
+              <span class="w-3 h-3 rounded-full bg-[#C0682C]"></span>
+              <span class="font-medium">Sepia (Default)</span>
+            </button>
+            <button onclick="setTheme('light')" class="p-2.5 rounded border theme-border flex items-center space-x-2 text-left bg-white text-stone-900">
+              <span class="w-3 h-3 rounded-full bg-blue-600"></span>
+              <span class="font-medium">Light Paper</span>
+            </button>
+            <button onclick="setTheme('dark')" class="p-2.5 rounded border theme-border flex items-center space-x-2 text-left bg-[#18181B] text-stone-100">
+              <span class="w-3 h-3 rounded-full bg-orange-500"></span>
+              <span class="font-medium">Dark Slate</span>
+            </button>
+            <button onclick="setTheme('midnight')" class="p-2.5 rounded border theme-border flex items-center space-x-2 text-left bg-[#090D16] text-slate-100">
+              <span class="w-3 h-3 rounded-full bg-sky-400"></span>
+              <span class="font-medium">Midnight Ink</span>
+            </button>
+            <button onclick="setTheme('nord')" class="p-2.5 rounded border theme-border flex items-center space-x-2 text-left bg-[#2E3440] text-slate-100">
+              <span class="w-3 h-3 rounded-full bg-teal-300"></span>
+              <span class="font-medium">Nord Frost</span>
+            </button>
+            <button onclick="setTheme('cybergold')" class="p-2.5 rounded border theme-border flex items-center space-x-2 text-left bg-[#121212] text-amber-200">
+              <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+              <span class="font-medium">Cyber Gold</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <label class="font-bold theme-text-main block">Editor Typography</label>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <span class="theme-text-muted block mb-1">Font Family</span>
+              <select id="fontFamilySelect" onchange="updateTypographySettings()" class="w-full p-1.5 rounded theme-bg-sheet border theme-border theme-text-main">
+                <option value="sans">System Sans-Serif</option>
+                <option value="serif">Classic Serif (Georgia)</option>
+                <option value="mono">Monospace (Code)</option>
+                <option value="dyslexic">OpenDyslexic Style</option>
+              </select>
+            </div>
+            <div>
+              <span class="theme-text-muted block mb-1">Font Size (<span id="fontSizeVal">14</span>px)</span>
+              <input type="range" id="fontSizeRange" min="12" max="28" value="14" oninput="updateTypographySettings()" class="w-full">
+            </div>
+          </div>
+        </div>
+
+        <div class="p-3 theme-bg-sheet rounded-lg border theme-border space-y-2">
+          <span class="font-bold theme-text-main block">Storage Diagnostics</span>
+          <div class="grid grid-cols-2 gap-2 text-[11px] theme-text-muted">
+            <div>LocalStorage Usage: <strong id="diagStorageKB" class="theme-text-main">2 KB</strong></div>
+            <div>Total Active Notes: <strong id="diagTotalNotes" class="theme-text-main">2</strong></div>
+            <div>Total Word Count: <strong id="diagTotalWords" class="theme-text-main">205</strong></div>
+            <div>Browser: <strong id="diagBrowser" class="theme-text-main">Web App</strong></div>
+          </div>
+        </div>
+
+        <div class="p-3 theme-bg-sheet rounded-lg border theme-border flex items-center justify-between">
+          <div>
+            <div class="font-bold theme-text-main">Download App for Offline Use</div>
+            <div class="theme-text-muted text-[11px]">Save standalone PaperDesk Ultra .html application locally.</div>
+          </div>
+          <button onclick="downloadAppOffline()" class="px-3 py-1.5 theme-bg-accent text-white rounded text-xs font-semibold">Download HTML</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION STACK -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+  <!-- CORE JAVASCRIPT ENGINE -->
+  <script>
+    // INITIAL DIRECTORY DATA
+    const INITIAL_FOLDERS = [
+      { id: 'folder-work', name: 'Work & Projects', parentId: null },
+      { id: 'folder-personal', name: 'Personal Notes', parentId: null }
+    ];
+
+    const INITIAL_NOTES = [
+      {
+        id: 'note-welcome',
+        title: 'Welcome to PaperDesk Ultra.md',
+        content: `# Welcome to PaperDesk Ultra ✒️
+
+**PaperDesk Ultra** is your tactile, distraction-free note-taking studio and editorial workspace.
+
+---
+
+### Key Capabilities
+
+1. 📜 **Sepa Dual Split View**: Click **Sepa** at the top right or press \`Alt+S\` to view live markdown side-by-side with synchronized scrolling.
+2. 📂 **Multi-Tab Workspace**: Open multiple notes simultaneously in top tab bar.
+3. 📁 **Virtual Folder Hierarchy**: Rename notes inline, create subfolders, drop files into directories, or favorite notes.
+4. 🕸️ **Knowledge Graph Network**: View interactive connections between notes via \`#tags\` or \`[[Wiki Links]]\`.
+5. 📌 **Corkboard Visual Board**: Drag and create visual sticky notes.
+6. 🎴 **Flashcard Study Deck**: Write questions with \`Q:\` and \`A:\` syntax to generate flip cards automatically.
+7. 🎧 **Synthesized Ambient Noise**: Web Audio API ambient rain sound generator.
+
+Try creating a link to another note using double brackets like [[Quick Reference.txt]]!`,
+        folderId: 'folder-work',
+        favorite: true,
+        locked: false,
+        passcode: '',
+        createdAt: Date.now() - 10000,
+        updatedAt: Date.now() - 5000,
+        snapshots: []
+      },
+      {
+        id: 'note-flashcards',
+        title: 'Quick Reference.txt',
+        content: `# Flashcard & Reference Note 🎴
+
+Q: What is Sepa Mode in PaperDesk?
+A: Sepa Mode is the dual split-screen view allowing simultaneous editing and live markdown preview rendering.
+
+Q: How do you link two notes together?
+A: Use double brackets like [[Note Title]] to create bidirectional links.
+
+Q: Which shortcut opens the Command Palette?
+A: Press Cmd + K or Ctrl + K.`,
+        folderId: 'folder-personal',
+        favorite: false,
+        locked: false,
+        passcode: '',
+        createdAt: Date.now() - 50000,
+        updatedAt: Date.now() - 20000,
+        snapshots: []
+      }
+    ];
+
+    // APPLICATION STATE
+    let state = {
+      folders: [],
+      notes: [],
+      trash: [],
+      openTabIds: ['note-welcome', 'note-flashcards'],
+      activeNoteId: 'note-welcome',
+      sidebarTab: 'tree',
+      workspaceMode: 'sepa', // 'edit', 'sepa', 'preview', 'graph', 'corkboard', 'flashcards'
+      lastDocumentMode: 'sepa', // Crucial for returning to document view after special overlay views
+      theme: 'sepia',
+      typography: {
+        fontFamily: 'sans',
+        fontSize: 14,
+        lineHeight: 1.6
+      },
+      scratchpad: '',
+      dailyGoal: 500,
+      sidebarCollapsed: false,
+      inspectorCollapsed: false,
+      selectedSnapshotIndex: null,
+      corkboardStickies: [
+        { id: 'sticky-1', title: 'Brainstorming', text: 'Outline the main chapters for the new article.', color: '#FAF5EE' },
+        { id: 'sticky-2', title: 'To-Do List', text: '1. Review math equations\n2. Export backup ZIP', color: '#DBEAFE' }
+      ]
+    };
+
+    // POMODORO STATE
+    let pomodoro = {
+      timeRemaining: 25 * 60,
+      timerId: null,
+      isRunning: false,
+      mode: 'work'
+    };
+
+    // AMBIENT NOISE AUDIO CONTEXT
+    let ambientAudioCtx = null;
+    let ambientGain = null;
+    let isAmbientPlaying = false;
+
+    // SPEECH RECOGNITION
+    let speechRecognition = null;
+    let isDictating = false;
+
+    const STORAGE_KEY = 'paperdesk_ultra_v2_data';
+
+    // INITIALIZATION
+    window.onload = function() {
+      loadState();
+      applyTheme(state.theme);
+      applyTypography();
+      renderSidebarDirectory();
+      renderTabBar();
+      setWorkspaceMode(state.workspaceMode || 'sepa');
+      loadActiveNote();
+      updateInspectorMetrics();
+      initSpeechRecognition();
+      startAutoSnapshotInterval();
+
+      window.addEventListener('keydown', handleGlobalShortcuts);
+    };
+
+    // LOCAL STORAGE MANAGEMENT
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        showSaveIndicator();
+      } catch (e) {
+        console.error('Save failed:', e);
+      }
+    }
+
+    function loadState() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          state = { ...state, ...JSON.parse(saved) };
+        } catch(e) {
+          console.error('Failed to parse state', e);
+        }
+      } else {
+        state.folders = [...INITIAL_FOLDERS];
+        state.notes = [...INITIAL_NOTES];
+      }
+
+      if (!state.openTabIds || state.openTabIds.length === 0) {
+        state.openTabIds = state.notes.length > 0 ? [state.notes[0].id] : [];
+      }
+
+      if (!state.lastDocumentMode) {
+        state.lastDocumentMode = 'sepa';
+      }
+
+      const scratchEl = document.getElementById('scratchpadInput');
+      if (scratchEl) scratchEl.value = state.scratchpad || '';
+    }
+
+    // WORKSPACE MODE ROUTING & DECOUPLING
+    function setWorkspaceMode(mode) {
+      if (['edit', 'sepa', 'preview'].includes(mode)) {
+        state.lastDocumentMode = mode;
+      }
+      state.workspaceMode = mode;
+
+      const p1 = document.getElementById('pane1');
+      const p2 = document.getElementById('pane2');
+      const p1Ed = document.getElementById('pane1Editor');
+      const p1Pr = document.getElementById('pane1Preview');
+      const graph = document.getElementById('graphWorkspace');
+      const cork = document.getElementById('corkboardWorkspace');
+      const flash = document.getElementById('flashcardWorkspace');
+
+      // Hide all overlay views first
+      p1.classList.remove('hidden');
+      p2.classList.add('hidden');
+      graph.classList.add('hidden');
+      cork.classList.add('hidden');
+      flash.classList.add('hidden');
+
+      if (mode === 'edit') {
+        p1Ed.classList.remove('hidden');
+        p1Pr.classList.add('hidden');
+      } else if (mode === 'sepa') {
+        p1Ed.classList.remove('hidden');
+        p2.classList.remove('hidden');
+        renderPreview();
+      } else if (mode === 'preview') {
+        p1Ed.classList.add('hidden');
+        p1Pr.classList.remove('hidden');
+        renderPreview();
+      } else if (mode === 'graph') {
+        p1.classList.add('hidden');
+        graph.classList.remove('hidden');
+        renderKnowledgeGraph();
+      } else if (mode === 'corkboard') {
+        p1.classList.add('hidden');
+        cork.classList.remove('hidden');
+        renderCorkboard();
+      } else if (mode === 'flashcards') {
+        p1.classList.add('hidden');
+        flash.classList.remove('hidden');
+        initFlashcards();
+      }
+
+      updateModeButtons();
+      saveState();
+    }
+
+    function exitOverlayView() {
+      const targetMode = state.lastDocumentMode || 'sepa';
+      setWorkspaceMode(targetMode);
+    }
+
+    function updateModeButtons() {
+      const modes = ['edit', 'sepa', 'preview', 'graph', 'corkboard', 'flashcards'];
+      const btnIds = ['modeBtnEdit', 'modeBtnSepa', 'modeBtnPrev', 'modeBtnGraph', 'modeBtnCork', 'modeBtnFlash'];
+
+      btnIds.forEach((id, idx) => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+
+        if (modes[idx] === state.workspaceMode) {
+          btn.className = 'px-2.5 py-0.5 rounded font-medium theme-text-main theme-bg-sheet shadow-xs';
+        } else {
+          btn.className = 'px-2.5 py-0.5 rounded font-medium theme-text-muted hover:theme-text-main';
+        }
+      });
+    }
+
+    // THEME MANAGEMENT
+    function setTheme(themeName) {
+      state.theme = themeName;
+      applyTheme(themeName);
+      saveState();
+      showToast(`Theme changed to ${themeName}`);
+    }
+
+    function applyTheme(themeName) {
+      const body = document.getElementById('appBody');
+      body.className = `h-full font-sans theme-${themeName} antialiased selection:bg-amber-700 selection:text-white`;
+    }
+
+    function updateTypographySettings() {
+      const fam = document.getElementById('fontFamilySelect').value;
+      const size = parseInt(document.getElementById('fontSizeRange').value);
+      document.getElementById('fontSizeVal').innerText = size;
+
+      state.typography.fontFamily = fam;
+      state.typography.fontSize = size;
+
+      applyTypography();
+      saveState();
+    }
+
+    function applyTypography() {
+      const editor = document.getElementById('pane1Editor');
+      if (!editor) return;
+
+      const fontClassMap = {
+        sans: 'font-sans',
+        serif: 'font-serif',
+        mono: 'font-mono',
+        dyslexic: 'font-dyslexic'
+      };
+
+      editor.className = `w-full h-full p-6 theme-bg-main theme-text-main focus:outline-none resize-none leading-relaxed border-none ${fontClassMap[state.typography.fontFamily] || 'font-sans'}`;
+      editor.style.fontSize = `${state.typography.fontSize || 14}px`;
+    }
+
+    // TAB BAR & NOTE NAVIGATION ENGINE
+    function renderTabBar() {
+      const tabBar = document.getElementById('tabBar');
+      if (!tabBar) return;
+
+      tabBar.innerHTML = '';
+
+      state.openTabIds.forEach(id => {
+        const note = state.notes.find(n => n.id === id);
+        if (!note) return;
+
+        const isActive = id === state.activeNoteId;
+        const tab = document.createElement('div');
+        tab.className = `group flex items-center space-x-2 px-3 py-1 rounded-t-md text-xs cursor-pointer border-t border-x theme-border ${
+          isActive ? 'theme-bg-main font-bold theme-text-main border-b-transparent' : 'theme-bg-sheet theme-text-muted hover:theme-text-main'
+        }`;
+
+        tab.onclick = () => selectNote(id);
+
+        tab.innerHTML = `
+          <i class="fa-regular ${note.title.endsWith('.md') ? 'fa-file-lines theme-accent' : 'fa-file-code'} text-[10px]"></i>
+          <span class="truncate max-w-[120px]">${escapeHtml(note.title)}</span>
+          <button onclick="event.stopPropagation(); closeTab('${id}')" class="p-0.5 hover:text-red-500 rounded text-[10px]" title="Close Tab">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        `;
+
+        tabBar.appendChild(tab);
+      });
+
+      // New Tab Button
+      const addTabBtn = document.createElement('button');
+      addTabBtn.className = 'px-2 py-1 text-xs theme-text-muted hover:theme-text-main rounded hover:theme-bg-sheet';
+      addTabBtn.title = 'Create & Open New Note';
+      addTabBtn.innerHTML = '<i class="fa-solid fa-plus"></i>';
+      addTabBtn.onclick = createNewNote;
+      tabBar.appendChild(addTabBtn);
+    }
+
+    function selectNote(id) {
+      const note = state.notes.find(n => n.id === id);
+      if (!note) return;
+
+      state.activeNoteId = id;
+      if (!state.openTabIds.includes(id)) {
+        state.openTabIds.push(id);
+      }
+
+      // CRITICAL FIX: Selecting a tab or note automatically exits Sticky Note/Graph/Flashcard mode!
+      if (['corkboard', 'graph', 'flashcards'].includes(state.workspaceMode)) {
+        setWorkspaceMode(state.lastDocumentMode || 'sepa');
+      }
+
+      loadActiveNote();
+      renderTabBar();
+      renderSidebarDirectory();
+      saveState();
+    }
+
+    function closeTab(id) {
+      state.openTabIds = state.openTabIds.filter(tId => tId !== id);
+
+      if (state.activeNoteId === id) {
+        if (state.openTabIds.length > 0) {
+          selectNote(state.openTabIds[state.openTabIds.length - 1]);
+        } else {
+          state.activeNoteId = null;
+          document.getElementById('pane1Editor').value = '';
+          document.getElementById('noteTitleInput').value = '';
+          document.getElementById('renameBarTitleInput').value = '';
+        }
+      }
+
+      // Automatically exit overlay views when tabs are closed
+      if (['corkboard', 'graph', 'flashcards'].includes(state.workspaceMode)) {
+        setWorkspaceMode(state.lastDocumentMode || 'sepa');
+      }
+
+      renderTabBar();
+      renderSidebarDirectory();
+      saveState();
+    }
+
+    // SIDEBAR & DIRECTORY TREE
+    function toggleLeftSidebar() {
+      const sb = document.getElementById('leftSidebar');
+      state.sidebarCollapsed = !state.sidebarCollapsed;
+      if (state.sidebarCollapsed) {
+        sb.classList.add('-ml-64');
+      } else {
+        sb.classList.remove('-ml-64');
+      }
+    }
+
+    function setSidebarTab(tabName) {
+      state.sidebarTab = tabName;
+      ['tree', 'favorites', 'tags', 'trash'].forEach(t => {
+        const btn = document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}Btn`);
+        if (btn) {
+          if (t === tabName) {
+            btn.className = 'py-1 px-2 border-b-2 border-amber-600 theme-text-main font-semibold';
+          } else {
+            btn.className = 'py-1 px-2 border-b-2 border-transparent hover:theme-text-main';
+          }
+        }
+      });
+      renderSidebarDirectory();
+    }
+
+    function renderSidebarDirectory() {
+      const container = document.getElementById('sidebarTreeContainer');
+      const searchVal = (document.getElementById('directorySearchInput')?.value || '').toLowerCase();
+      const trashBadge = document.getElementById('trashBadge');
+      const noteCount = document.getElementById('sidebarNoteCount');
+
+      if (trashBadge) trashBadge.innerText = (state.trash || []).length;
+      if (noteCount) noteCount.innerText = `${state.notes.length} note${state.notes.length === 1 ? '' : 's'}`;
+
+      container.innerHTML = '';
+
+      if (state.sidebarTab === 'trash') {
+        renderTrashList(container);
+        return;
+      }
+
+      if (state.sidebarTab === 'favorites') {
+        const favNotes = state.notes.filter(n => n.favorite);
+        if (favNotes.length === 0) {
+          container.innerHTML = `<div class="p-3 text-center text-xs theme-text-muted italic">No favorited notes yet.</div>`;
+          return;
+        }
+        favNotes.forEach(n => renderNoteItem(container, n));
+        return;
+      }
+
+      if (state.sidebarTab === 'tags') {
+        renderTagsList(container);
+        return;
+      }
+
+      const rootFolders = state.folders.filter(f => !f.parentId);
+      rootFolders.forEach(folder => renderFolderItem(container, folder, searchVal));
+
+      const rootNotes = state.notes.filter(n => !n.folderId && n.title.toLowerCase().includes(searchVal));
+      rootNotes.forEach(note => renderNoteItem(container, note));
+    }
+
+    function renderFolderItem(container, folder, searchVal) {
+      const folderNotes = state.notes.filter(n => n.folderId === folder.id && n.title.toLowerCase().includes(searchVal));
+      const subFolders = state.folders.filter(f => f.parentId === folder.id);
+
+      const folderEl = document.createElement('div');
+      folderEl.className = 'space-y-0.5';
+      folderEl.innerHTML = `
+        <div class="group flex items-center justify-between px-2 py-1 rounded cursor-pointer hover:theme-bg-sheet text-xs theme-text-main font-semibold">
+          <div class="flex items-center space-x-1.5 truncate min-w-0 flex-1">
+            <i class="fa-regular fa-folder theme-accent text-xs"></i>
+            <span class="truncate" ondblclick="enableInlineFolderRename(event, '${folder.id}')">${escapeHtml(folder.name)}</span>
+          </div>
+          <div class="hidden group-hover:flex items-center space-x-1">
+            <button onclick="createNewNote('${folder.id}')" class="p-0.5 hover:theme-accent" title="New Note in Folder"><i class="fa-solid fa-plus"></i></button>
+            <button onclick="enableInlineFolderRename(event, '${folder.id}')" class="p-0.5 hover:theme-accent" title="Rename Folder"><i class="fa-solid fa-pen"></i></button>
+            <button onclick="deleteFolder('${folder.id}')" class="p-0.5 hover:text-red-500" title="Delete Folder"><i class="fa-solid fa-trash-can"></i></button>
+          </div>
+        </div>
+        <div class="pl-3 border-l theme-border space-y-0.5 ml-2" id="folder-children-${folder.id}"></div>
+      `;
+
+      container.appendChild(folderEl);
+      const childContainer = folderEl.querySelector(`#folder-children-${folder.id}`);
+
+      subFolders.forEach(sf => renderFolderItem(childContainer, sf, searchVal));
+      folderNotes.forEach(n => renderNoteItem(childContainer, n));
+    }
+
+    function renderNoteItem(container, note) {
+      const isActive = note.id === state.activeNoteId;
+      const item = document.createElement('div');
+      item.className = `group flex items-center justify-between px-2 py-1 rounded cursor-pointer text-xs transition-colors ${
+        isActive ? 'theme-bg-accent-light font-bold theme-text-main' : 'hover:theme-bg-sheet theme-text-main'
+      }`;
+
+      item.onclick = () => selectNote(note.id);
+
+      item.innerHTML = `
+        <div class="flex items-center space-x-2 truncate min-w-0 flex-1">
+          <i class="fa-regular ${note.locked ? 'fa-lock text-red-500' : (note.title.endsWith('.md') ? 'fa-file-lines theme-accent' : 'fa-file-code theme-text-muted')} text-xs"></i>
+          <span class="truncate" ondblclick="enableInlineNoteRename(event, '${note.id}')">${escapeHtml(note.title)}</span>
+        </div>
+        <div class="hidden group-hover:flex items-center space-x-1">
+          <button onclick="event.stopPropagation(); enableInlineNoteRename(event, '${note.id}')" class="p-0.5 hover:theme-accent" title="Rename Note"><i class="fa-solid fa-pen"></i></button>
+          <button onclick="event.stopPropagation(); toggleFavorite('${note.id}')" class="p-0.5 hover:text-amber-500">
+            <i class="${note.favorite ? 'fa-solid fa-star text-amber-500' : 'fa-regular fa-star'}"></i>
+          </button>
+          <button onclick="event.stopPropagation(); moveNoteToTrash('${note.id}')" class="p-0.5 hover:text-red-500" title="Move to Trash">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      `;
+
+      container.appendChild(item);
+    }
+
+    function enableInlineNoteRename(e, id) {
+      e.stopPropagation();
+      const note = state.notes.find(n => n.id === id);
+      if (!note) return;
+
+      const newTitle = prompt('Rename note title:', note.title);
+      if (newTitle && newTitle.trim()) {
+        note.title = newTitle.trim();
+        saveState();
+        renderSidebarDirectory();
+        renderTabBar();
+        if (state.activeNoteId === id) {
+          loadActiveNote();
+        }
+      }
+    }
+
+    function enableInlineFolderRename(e, id) {
+      e.stopPropagation();
+      const folder = state.folders.find(f => f.id === id);
+      if (!folder) return;
+
+      const newName = prompt('Rename folder:', folder.name);
+      if (newName && newName.trim()) {
+        folder.name = newName.trim();
+        saveState();
+        renderSidebarDirectory();
+      }
+    }
+
+    function renderTrashList(container) {
+      if (!state.trash || state.trash.length === 0) {
+        container.innerHTML = `<div class="p-3 text-center text-xs theme-text-muted italic">Trash bin is empty.</div>`;
+        return;
+      }
+
+      const emptyBtn = document.createElement('button');
+      emptyBtn.className = 'w-full mb-2 py-1 theme-bg-main border theme-border rounded text-xs text-red-600 hover:bg-red-500 hover:text-white transition-colors font-semibold';
+      emptyBtn.innerText = 'Empty Trash Bin';
+      emptyBtn.onclick = emptyTrashBin;
+      container.appendChild(emptyBtn);
+
+      state.trash.forEach(item => {
+        const el = document.createElement('div');
+        el.className = 'flex items-center justify-between p-1.5 theme-bg-sheet rounded text-xs theme-text-main';
+        el.innerHTML = `
+          <span class="truncate flex-1">${escapeHtml(item.title)}</span>
+          <div class="flex items-center space-x-1">
+            <button onclick="restoreFromTrash('${item.id}')" class="p-1 hover:text-emerald-600" title="Restore Note"><i class="fa-solid fa-rotate-left"></i></button>
+            <button onclick="permanentlyDelete('${item.id}')" class="p-1 hover:text-red-600" title="Delete Permanently"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+        `;
+        container.appendChild(el);
+      });
+    }
+
+    function renderTagsList(container) {
+      const tagMap = {};
+      state.notes.forEach(n => {
+        const matches = (n.content || '').match(/#[\w-]+/g) || [];
+        matches.forEach(tag => {
+          tagMap[tag] = (tagMap[tag] || 0) + 1;
+        });
+      });
+
+      const tags = Object.keys(tagMap);
+      if (tags.length === 0) {
+        container.innerHTML = `<div class="p-3 text-center text-xs theme-text-muted italic">No #tags detected in notes yet.</div>`;
+        return;
+      }
+
+      tags.forEach(tag => {
+        const item = document.createElement('div');
+        item.className = 'flex items-center justify-between px-2 py-1 rounded hover:theme-bg-sheet cursor-pointer text-xs theme-text-main';
+        item.onclick = () => {
+          document.getElementById('directorySearchInput').value = tag;
+          renderSidebarDirectory();
+        };
+        item.innerHTML = `
+          <span class="font-semibold theme-accent">${tag}</span>
+          <span class="text-[10px] theme-text-muted">${tagMap[tag]}</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // NEW NOTE CREATION MODAL & ACTION
+    function createNewNote(presetFolderId = null) {
+      openNewNoteModal(presetFolderId);
+    }
+
+    function openNewNoteModal(presetFolderId = null) {
+      const modal = document.getElementById('newNoteModal');
+      const titleInput = document.getElementById('newNoteTitleInput');
+      const extSelect = document.getElementById('newNoteExtSelect');
+      const folderSelect = document.getElementById('newNoteFolderSelect');
+
+      if (!modal || !titleInput || !extSelect || !folderSelect) return;
+
+      const count = state.notes.length + 1;
+      titleInput.value = `Untitled Note ${count}`;
+      extSelect.value = '.md';
+
+      folderSelect.innerHTML = '<option value="">Root Directory</option>';
+      state.folders.forEach(f => {
+        const opt = document.createElement('option');
+        opt.value = f.id;
+        opt.innerText = f.name;
+        if (presetFolderId === f.id) opt.selected = true;
+        folderSelect.appendChild(opt);
+      });
+
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        titleInput.focus();
+        titleInput.select();
+      }, 50);
+    }
+
+    function closeNewNoteModal() {
+      const modal = document.getElementById('newNoteModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function confirmCreateNote() {
+      const titleInput = document.getElementById('newNoteTitleInput');
+      const extSelect = document.getElementById('newNoteExtSelect');
+      const folderSelect = document.getElementById('newNoteFolderSelect');
+
+      let rawTitle = (titleInput?.value || 'Untitled Note').trim();
+      const ext = extSelect?.value || '.md';
+      const folderId = folderSelect?.value || null;
+
+      if (!rawTitle.toLowerCase().endsWith(ext)) {
+        rawTitle += ext;
+      }
+
+      const newNote = {
+        id: 'note-' + Date.now(),
+        title: rawTitle,
+        content: `# ${rawTitle.replace(/\.[^/.]+$/, '')}\n\nStart writing your thoughts here...`,
+        folderId: folderId,
+        favorite: false,
+        locked: false,
+        passcode: '',
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        snapshots: []
+      };
+
+      state.notes.push(newNote);
+      closeNewNoteModal();
+
+      // Instantly open and select new note
+      selectNote(newNote.id);
+      showToast(`Created note "${newNote.title}"`);
+    }
+
+    function createNewFolder() {
+      const name = prompt('Folder Name:');
+      if (name && name.trim()) {
+        const folder = {
+          id: 'folder-' + Date.now(),
+          name: name.trim(),
+          parentId: null
+        };
+        state.folders.push(folder);
+        saveState();
+        renderSidebarDirectory();
+        showToast(`Folder "${folder.name}" created`);
+      }
+    }
+
+    function deleteFolder(id) {
+      if (!confirm('Delete folder and move notes inside to root?')) return;
+      state.folders = state.folders.filter(f => f.id !== id);
+      state.notes.forEach(n => {
+        if (n.folderId === id) n.folderId = null;
+      });
+      saveState();
+      renderSidebarDirectory();
+    }
+
+    function moveNoteToTrash(id) {
+      const idx = state.notes.findIndex(n => n.id === id);
+      if (idx !== -1) {
+        const [removed] = state.notes.splice(idx, 1);
+        if (!state.trash) state.trash = [];
+        state.trash.push(removed);
+
+        closeTab(id);
+        saveState();
+        renderSidebarDirectory();
+        showToast(`Moved "${removed.title}" to Trash`);
+      }
+    }
+
+    function restoreFromTrash(id) {
+      const idx = state.trash.findIndex(t => t.id === id);
+      if (idx !== -1) {
+        const [restored] = state.trash.splice(idx, 1);
+        state.notes.push(restored);
+        saveState();
+        renderSidebarDirectory();
+        selectNote(restored.id);
+        showToast(`Restored "${restored.title}"`);
+      }
+    }
+
+    function permanentlyDelete(id) {
+      if (!confirm('Permanently delete this note?')) return;
+      state.trash = state.trash.filter(t => t.id !== id);
+      saveState();
+      renderSidebarDirectory();
+      showToast('Note deleted permanently');
+    }
+
+    function emptyTrashBin() {
+      if (!confirm('Empty all items in Trash Bin?')) return;
+      state.trash = [];
+      saveState();
+      renderSidebarDirectory();
+      showToast('Trash bin emptied');
+    }
+
+    // ACTIVE NOTE LOADING & RENAME BAR SYNC
+    function loadActiveNote() {
+      const note = state.notes.find(n => n.id === state.activeNoteId);
+      const editor = document.getElementById('pane1Editor');
+      const titleInput = document.getElementById('noteTitleInput');
+      const renameTitleInput = document.getElementById('renameBarTitleInput');
+      const renameExtSelect = document.getElementById('renameBarExtSelect');
+      const renameFolderSelect = document.getElementById('renameBarFolderSelect');
+      const favIcon = document.getElementById('favStarIcon');
+      const lockOverlay = document.getElementById('passcodeLockOverlay');
+      const lockedBadge = document.getElementById('lockedBadge');
+
+      if (!note) {
+        if (editor) editor.value = '';
+        if (titleInput) titleInput.value = '';
+        if (renameTitleInput) renameTitleInput.value = '';
+        return;
+      }
+
+      // Sync Rename Bar Folder Dropdown
+      if (renameFolderSelect) {
+        renameFolderSelect.innerHTML = '<option value="">Root Folder</option>';
+        state.folders.forEach(f => {
+          const opt = document.createElement('option');
+          opt.value = f.id;
+          opt.innerText = f.name;
+          if (note.folderId === f.id) opt.selected = true;
+          renameFolderSelect.appendChild(opt);
+        });
+      }
+
+      // Extract Extension and Base Title
+      const lastDot = note.title.lastIndexOf('.');
+      let baseTitle = note.title;
+      let ext = '.md';
+      if (lastDot !== -1) {
+        baseTitle = note.title.substring(0, lastDot);
+        ext = note.title.substring(lastDot);
+      }
+
+      if (titleInput) titleInput.value = note.title;
+      if (renameTitleInput) renameTitleInput.value = baseTitle;
+      if (renameExtSelect) renameExtSelect.value = ext;
+
+      if (favIcon) {
+        favIcon.className = note.favorite ? 'fa-solid fa-star text-amber-500' : 'fa-regular fa-star';
+      }
+
+      if (note.locked) {
+        if (lockOverlay) lockOverlay.classList.remove('hidden');
+        if (lockedBadge) lockedBadge.classList.remove('hidden');
+        if (editor) editor.value = '';
+      } else {
+        if (lockOverlay) lockOverlay.classList.add('hidden');
+        if (lockedBadge) lockedBadge.classList.add('hidden');
+        if (editor) editor.value = note.content;
+      }
+
+      renderPreview();
+      updateInspectorMetrics();
+      generateTOC();
+    }
+
+    function handleContentInput() {
+      const note = state.notes.find(n => n.id === state.activeNoteId);
+      const editor = document.getElementById('pane1Editor');
+
+      if (note && editor) {
+        note.content = editor.value;
+        note.updatedAt = Date.now();
+        renderPreview();
+        updateInspectorMetrics();
+        generateTOC();
+        saveState();
+      }
+    }
+
+    function handleTitleChange(val) {
+      const note = state.notes.find(n => n.id === state.activeNoteId);
+      if (note) {
+        note.title = val;
+        
+        // Sync Rename Bar
+        const lastDot = val.lastIndexOf('.');
+        if (lastDot !== -1) {
+          document.getElementById('renameBarTitleInput').value = val.substring(0, lastDot);
+          document.getElementById('renameBarExtSelect').value = val.substring(lastDot);
+        } else {
+          document.getElementById('renameBarTitleInput').value = val;
+        }
+
+        renderTabBar();
+        renderSidebarDirectory();
+        saveState();
+      }
+    }
+
+    function handleRenameBarChange() {
+      const baseTitle = document.getElementById('renameBarTitleInput').value.trim() || 'Untitled';
+      const ext = document.getElementById('renameBarExtSelect').value;
+      const fullTitle = `${baseTitle}${ext}`;
+
+      const note = state.notes.find(n => n.id === state.activeNoteId);
+      if (note) {
+        note.title = fullTitle;
+        document.getElementById('noteTitleInput').value = fullTitle;
+        renderTabBar();
+        renderSidebarDirectory();
+        saveState();
+      }
+    }
+
+    function handleRenameBarFolderChange() {
+      const folderId = document.getElementById('renameBarFolderSelect').value || null;
+      const note = state.notes.find(n => n.id === state.activeNoteId);
+      if (note) {
+        note.folderId = folderId;
+        renderSidebarDirectory();
+        saveState();
+      }
+    }
+
+    function saveActiveNoteTitleFromRenameBar() {
+      handleRenameBarChange();
+      showToast('Document title updated');
+    }
+
+    function toggleActiveNoteFavorite() {
+      const note = state.notes.find(n => n.id === state.activeNoteId);
+      if (note) {
+        note.favorite = !note.favorite;
+        loadActiveNote();
+        renderSidebarDirectory();
+        saveState();
+      }
+    }
+
+    function toggleFavorite(id) {
+      const note = state.notes.find(n => n.id === id);
+      if (note) {
+        note.favorite = !note.favorite;
+        renderSidebarDirectory();
+        if (state.activeNoteId === id) loadActiveNote();
+        saveState();
+      }
+    }
+
+    // MARKDOWN RENDER ENGINE
+    function renderPreview() {
+      const note = state.notes.find(n => n.id === state.activeNoteId);
+      if (!note) return;
+
+      let rawHtml = marked.parse(note.content || '');
+
+      // Parse [[Wiki Links]]
+      rawHtml = rawHtml.replace(/\[\[(.*?)\]\]/g, (match, title) => {
+        return `<a class="wiki-link" onclick="openWikiLink('${title.replace(/'/g, "\\'")}')">${escapeHtml(title)}</a>`;
+      });
+
+      const p1Pr = document.getElementById('pane1Preview');
+      const p2Pr = document.getElementById('pane2Preview');
+
+      if (p1Pr) p1Pr.innerHTML = rawHtml;
+      if (p2Pr) p2Pr.innerHTML = rawHtml;
+
+      // Render KaTeX Math & Syntax Highlighting
+      if (window.renderMathInElement) {
+        if (p1Pr) renderMathInElement(p1Pr, { delimiters: [{left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false}] });
+        if (p2Pr) renderMathInElement(p2Pr, { delimiters: [{left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false}] });
+      }
+
+      if (window.hljs) {
+        if (p1Pr) p1Pr.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+        if (p2Pr) p2Pr.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+      }
+    }
+
+    function openWikiLink(targetTitle) {
+      const targetNote = state.notes.find(n => n.title.toLowerCase().includes(targetTitle.toLowerCase()));
+      if (targetNote) {
+        selectNote(targetNote.id);
+      } else {
+        if (confirm(`Note "${targetTitle}" not found. Create it?`)) {
+          const newNote = {
+            id: 'note-' + Date.now(),
+            title: `${targetTitle}.md`,
+            content: `# ${targetTitle}\n\nLinked document...`,
+            folderId: null,
+            favorite: false,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+            snapshots: []
+          };
+          state.notes.push(newNote);
+          selectNote(newNote.id);
+        }
+      }
+    }
+
+    // FORMATTING TOOLBAR
+    function insertFormat(type) {
+      const editor = document.getElementById('pane1Editor');
+      if (!editor) return;
+
+      const start = editor.selectionStart;
+      const end = editor.selectionEnd;
+      const selectedText = editor.value.substring(start, end);
+
+      let replacement = '';
+      switch(type) {
+        case 'bold': replacement = `**${selectedText || 'bold text'}**`; break;
+        case 'italic': replacement = `*${selectedText || 'italic text'}*`; break;
+        case 'strikethrough': replacement = `~~${selectedText || 'strikethrough'}~~`; break;
+        case 'h1': replacement = `\n# ${selectedText || 'Heading 1'}\n`; break;
+        case 'h2': replacement = `\n## ${selectedText || 'Heading 2'}\n`; break;
+        case 'h3': replacement = `\n### ${selectedText || 'Heading 3'}\n`; break;
+        case 'quote': replacement = `\n> ${selectedText || 'Quote'}\n`; break;
+        case 'code': replacement = `\n\`\`\`javascript\n${selectedText || '// Code here'}\n\`\`\`\n`; break;
+        case 'link': replacement = `[${selectedText || 'Link Text'}](https://example.com)`; break;
+        case 'table': replacement = `\n| Header 1 | Header 2 |\n| --- | --- |\n| Cell 1 | Cell 2 |\n`; break;
+        case 'task': replacement = `\n- [ ] ${selectedText || 'New Task'}\n`; break;
+        case 'wikilink': replacement = `[[${selectedText || 'Note Title'}]]`; break;
+        case 'math': replacement = `\n$$ e^{i\\pi} + 1 = 0 $$\n`; break;
+      }
+
+      editor.value = editor.value.substring(0, start) + replacement + editor.value.substring(end);
+      handleContentInput();
+      editor.focus();
+    }
+
+    // KNOWLEDGE GRAPH VISUALIZER
+    function renderKnowledgeGraph() {
+      const canvas = document.getElementById('graphCanvas');
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+
+      const nodes = state.notes.map((n, i) => ({
+        id: n.id,
+        title: n.title,
+        x: Math.random() * (canvas.width - 100) + 50,
+        y: Math.random() * (canvas.height - 100) + 50,
+        radius: n.id === state.activeNoteId ? 18 : 12
+      }));
+
+      // Find links
+      const links = [];
+      state.notes.forEach((n, i) => {
+        const matches = (n.content || '').match(/\[\[(.*?)\]\]/g) || [];
+        matches.forEach(m => {
+          const targetTitle = m.replace('[[', '').replace(']]', '').toLowerCase();
+          const targetIndex = state.notes.findIndex(tn => tn.title.toLowerCase().includes(targetTitle));
+          if (targetIndex !== -1) {
+            links.push({ source: i, target: targetIndex });
+          }
+        });
+      });
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw Links
+        ctx.strokeStyle = 'rgba(192, 104, 44, 0.4)';
+        ctx.lineWidth = 1.5;
+        links.forEach(l => {
+          ctx.beginPath();
+          ctx.moveTo(nodes[l.source].x, nodes[l.source].y);
+          ctx.lineTo(nodes[l.target].x, nodes[l.target].y);
+          ctx.stroke();
+        });
+
+        // Draw Nodes
+        nodes.forEach(node => {
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+          ctx.fillStyle = node.id === state.activeNoteId ? '#C0682C' : '#82726B';
+          ctx.fill();
+          ctx.strokeStyle = '#FAF6EF';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          // Title Label
+          ctx.fillStyle = '#3D312E';
+          ctx.font = '11px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(node.title, node.x, node.y + node.radius + 14);
+        });
+      }
+
+      draw();
+
+      // Click event to select note from Knowledge Graph
+      canvas.onclick = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickY = e.clientY - rect.top;
+
+        nodes.forEach(node => {
+          const dist = Math.hypot(node.x - clickX, node.y - clickY);
+          if (dist <= node.radius) {
+            selectNote(node.id);
+          }
+        });
+      };
+    }
+
+    // CORKBOARD STICKY BOARD
+    function renderCorkboard() {
+      const container = document.getElementById('corkboardContainer');
+      if (!container) return;
+
+      container.innerHTML = '';
+
+      state.corkboardStickies.forEach((sticky, idx) => {
+        const card = document.createElement('div');
+        card.className = 'sticky-note w-60 p-4 rounded-lg border theme-border space-y-2 select-none relative';
+        card.style.backgroundColor = sticky.color || '#FAF6EF';
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between border-b theme-border pb-1">
+            <input type="text" value="${escapeHtml(sticky.title)}" oninput="updateStickyTitle(${idx}, this.value)" class="bg-transparent font-bold text-xs theme-text-main focus:outline-none w-full">
+            <button onclick="deleteSticky(${idx})" class="text-xs theme-text-muted hover:text-red-500 pl-1"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <textarea oninput="updateStickyText(${idx}, this.value)" class="w-full h-24 bg-transparent text-xs theme-text-main focus:outline-none resize-none">${escapeHtml(sticky.text)}</textarea>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function addCorkboardSticky() {
+      const colors = ['#FAF6EF', '#DBEAFE', '#FEF08A', '#DCFCE7', '#FCE7F3'];
+      const randColor = colors[Math.floor(Math.random() * colors.length)];
+      state.corkboardStickies.push({
+        id: 'sticky-' + Date.now(),
+        title: 'New Sticky',
+        text: 'Quick note content...',
+        color: randColor
+      });
+      renderCorkboard();
+      saveState();
+    }
+
+    function updateStickyTitle(idx, val) {
+      if (state.corkboardStickies[idx]) {
+        state.corkboardStickies[idx].title = val;
+        saveState();
+      }
+    }
+
+    function updateStickyText(idx, val) {
+      if (state.corkboardStickies[idx]) {
+        state.corkboardStickies[idx].text = val;
+        saveState();
+      }
+    }
+
+    function deleteSticky(idx) {
+      state.corkboardStickies.splice(idx, 1);
+      renderCorkboard();
+      saveState();
+    }
+
+    // FLASHCARD STUDY DECK
+    let flashcardsList = [];
+    let flashcardIndex = 0;
+    let flashcardFlipped = false;
+
+    function initFlashcards() {
+      const note = state.notes.find(n => n.id === state.activeNoteId);
+      flashcardsList = [];
+      flashcardIndex = 0;
+      flashcardFlipped = false;
+
+      if (note) {
+        const lines = (note.content || '').split('\n');
+        let currentQ = '';
+
+        lines.forEach(line => {
+          if (line.trim().startsWith('Q:')) {
+            currentQ = line.replace(/^Q:\s*/, '').trim();
+          } else if (line.trim().startsWith('A:') && currentQ) {
+            const answer = line.replace(/^A:\s*/, '').trim();
+            flashcardsList.push({ question: currentQ, answer: answer });
+            currentQ = '';
+          }
+        });
+      }
+
+      renderFlashcard();
+    }
+
+    function renderFlashcard() {
+      const contentEl = document.getElementById('cardContent');
+      const progressEl = document.getElementById('cardProgress');
+      const hintEl = document.getElementById('cardFlipHint');
+
+      if (flashcardsList.length === 0) {
+        if (contentEl) contentEl.innerText = 'No flashcards found in active note. Use "Q: Question" and "A: Answer" syntax.';
+        if (progressEl) progressEl.innerText = '0 of 0';
+        return;
+      }
+
+      const card = flashcardsList[flashcardIndex];
+      if (contentEl) {
+        contentEl.innerText = flashcardFlipped ? card.answer : card.question;
+      }
+      if (hintEl) {
+        hintEl.innerText = flashcardFlipped ? 'Answer (Click to flip question)' : 'Question (Click to flip answer)';
+      }
+      if (progressEl) {
+        progressEl.innerText = `Card ${flashcardIndex + 1} of ${flashcardsList.length}`;
+      }
+    }
+
+    function flipFlashcard() {
+      flashcardFlipped = !flashcardFlipped;
+      renderFlashcard();
+    }
+
+    function nextFlashcard() {
+      if (flashcardsList.length === 0) return;
+      flashcardIndex = (flashcardIndex + 1) % flashcardsList.length;
+      flashcardFlipped = false;
+      renderFlashcard();
+    }
+
+    function prevFlashcard() {
+      if (flashcardsList.length === 0) return;
+      flashcardIndex = (flashcardIndex - 1 + flashcardsList.length) % flashcardsList.length;
+      flashcardFlipped = false;
+      renderFlashcard();
+    }
+
+    // INSPECTOR & METRICS
+    function updateInspectorMetrics() {
+      const note = state.notes.find(n => n.id === state.activeNoteId);
+      const text = note ? (note.content || '') : '';
+
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+      const chars = text.length;
+      const readMin = Math.ceil(words / 200);
+
+      const statsEl = document.getElementById('pane1LiveStats');
+      if (statsEl) {
+        statsEl.innerText = `${words} words · ${chars} chars · ~${readMin} min read`;
+      }
+
+      // Goal Progress
+      const goal = state.dailyGoal || 500;
+      const pct = Math.min(100, Math.round((words / goal) * 100));
+
+      const bar = document.getElementById('goalProgressBar');
+      const pctTxt = document.getElementById('goalPercentText');
+      const todayTxt = document.getElementById('wordsWrittenToday');
+
+      if (bar) bar.style.width = `${pct}%`;
+      if (pctTxt) pctTxt.innerText = `${pct}%`;
+      if (todayTxt) todayTxt.innerText = `${words} words today`;
+    }
+
+    function updateDailyGoal(val) {
+      state.dailyGoal = parseInt(val) || 500;
+      updateInspectorMetrics();
+      saveState();
+    }
+
+    function generateTOC() {
+      const tocContainer = document.getElementById('tocContainer');
+      const note = state.notes.find(n => n.id === state.activeNoteId);
+      if (!tocContainer || !note) return;
+
+      tocContainer.innerHTML = '';
+      const matches = (note.content || '').match(/^(#{1,3})\s+(.*)$/gm) || [];
+
+      if (matches.length === 0) {
+        tocContainer.innerHTML = `<span class="italic text-[10px]">No headings found.</span>`;
+        return;
+      }
+
+      matches.forEach(m => {
+        const level = m.match(/^#+/)[0].length;
+        const text = m.replace(/^#+\s+/, '');
+        const item = document.createElement('div');
+        item.className = `cursor-pointer hover:theme-accent truncate ${level === 2 ? 'pl-2' : level === 3 ? 'pl-4' : 'font-semibold'}`;
+        item.innerText = text;
+        tocContainer.appendChild(item);
+      });
+    }
+
+    // POMODORO TIMER
+    function togglePomodoro() {
+      if (pomodoro.isRunning) {
+        clearInterval(pomodoro.timerId);
+        pomodoro.isRunning = false;
+        document.getElementById('pomoStartBtn').innerText = 'Start';
+      } else {
+        pomodoro.isRunning = true;
+        document.getElementById('pomoStartBtn').innerText = 'Pause';
+        pomodoro.timerId = setInterval(() => {
+          pomodoro.timeRemaining--;
+          updatePomodoroDisplay();
+
+          if (pomodoro.timeRemaining <= 0) {
+            clearInterval(pomodoro.timerId);
+            pomodoro.isRunning = false;
+            playChimeSound();
+            showToast('Pomodoro session completed!');
+            resetPomodoro();
+          }
+        }, 1000);
+      }
+    }
+
+    function resetPomodoro() {
+      clearInterval(pomodoro.timerId);
+      pomodoro.isRunning = false;
+      pomodoro.timeRemaining = 25 * 60;
+      document.getElementById('pomoStartBtn').innerText = 'Start';
+      updatePomodoroDisplay();
+    }
+
+    function updatePomodoroDisplay() {
+      const min = Math.floor(pomodoro.timeRemaining / 60);
+      const sec = pomodoro.timeRemaining % 60;
+      const display = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+      const el = document.getElementById('pomoTimerDisplay');
+      if (el) el.innerText = display;
+    }
+
+    function playChimeSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 1.2);
+      } catch(e) {}
+    }
+
+    // AMBIENT SOUND NOISE SYNTHESIZER
+    function toggleAmbientNoise() {
+      if (isAmbientPlaying) {
+        if (ambientGain) ambientGain.gain.setTargetAtTime(0, ambientAudioCtx.currentTime, 0.1);
+        isAmbientPlaying = false;
+        document.getElementById('ambientBtn').classList.remove('theme-accent');
+        showToast('Ambient noise stopped');
+      } else {
+        try {
+          if (!ambientAudioCtx) {
+            ambientAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          }
+          const bufferSize = ambientAudioCtx.sampleRate * 2;
+          const noiseBuffer = ambientAudioCtx.createBuffer(1, bufferSize, ambientAudioCtx.sampleRate);
+          const output = noiseBuffer.getChannelData(0);
+
+          for (let i = 0; i < bufferSize; i++) {
+            output[i] = Math.random() * 2 - 1;
+          }
+
+          const whiteNoise = ambientAudioCtx.createBufferSource();
+          whiteNoise.buffer = noiseBuffer;
+          whiteNoise.loop = true;
+
+          const filter = ambientAudioCtx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(400, ambientAudioCtx.currentTime);
+
+          ambientGain = ambientAudioCtx.createGain();
+          ambientGain.gain.setValueAtTime(0.08, ambientAudioCtx.currentTime);
+
+          whiteNoise.connect(filter);
+          filter.connect(ambientGain);
+          ambientGain.connect(ambientAudioCtx.destination);
+
+          whiteNoise.start();
+          isAmbientPlaying = true;
+          document.getElementById('ambientBtn').classList.add('theme-accent');
+          showToast('Playing synthesized ambient rain rumble');
+        } catch(e) {
+          showToast('Audio synthesis not supported');
+        }
+      }
+    }
+
+    // SCRATCHPAD
+    function saveScratchpad() {
+      const val = document.getElementById('scratchpadInput').value;
+      state.scratchpad = val;
+      saveState();
+    }
+
+    function clearScratchpad() {
+      document.getElementById('scratchpadInput').value = '';
+      state.scratchpad = '';
+      saveState();
+    }
+
+    // FILE IMPORT & EXPORT
+    function triggerImport() {
+      document.getElementById('fileInput').click();
+    }
+
+    function handleFileImport(e) {
+      const files = Array.from(e.target.files);
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const content = event.target.result;
+          const newNote = {
+            id: 'note-' + Date.now() + Math.random().toString(36).substr(2, 4),
+            title: file.name,
+            content: content,
+            folderId: null,
+            favorite: false,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+            snapshots: []
+          };
+          state.notes.push(newNote);
+          saveState();
+          renderSidebarDirectory();
+          selectNote(newNote.id);
+          showToast(`Imported ${file.name}`);
+        };
+        reader.readAsText(file);
+      });
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.getElementById('dragOverlay').classList.remove('hidden');
+    }
+
+    function handleDragLeave(e) {
+      document.getElementById('dragOverlay').classList.add('hidden');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      document.getElementById('dragOverlay').classList.add('hidden');
+      if (e.dataTransfer.files) {
+        handleFileImport({ target: { files: e.dataTransfer.files } });
+      }
+    }
+
+    function exportAllZip() {
+      if (!window.JSZip) {
+        showToast('Zip library loading...');
+        return;
+      }
+
+      const zip = new JSZip();
+      state.notes.forEach(note => {
+        let folderPath = '';
+        if (note.folderId) {
+          const folder = state.folders.find(f => f.id === note.folderId);
+          if (folder) folderPath = folder.name + '/';
+        }
+        zip.file(`${folderPath}${note.title}`, note.content);
+      });
+
+      zip.generateAsync({ type: 'blob' }).then(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'PaperDesk_Notes.zip';
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Downloaded PaperDesk_Notes.zip');
+      });
+    }
+
+    function downloadActiveNote(format) {
+      const note = state.notes.find(n => n.id === state.activeNoteId);
+      if (!note) return;
+
+      const blob = new Blob([note.content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = note.title;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportDatabaseJSON() {
+      const dataStr = JSON.stringify(state, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'PaperDesk_Backup.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadAppOffline() {
+      const htmlContent = document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'PaperDesk_App.html';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // MODALS & SHORTCUTS
+    function openCommandPalette() {
+      const modal = document.getElementById('commandPaletteModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        filterPaletteResults('');
+        document.getElementById('paletteInput').focus();
+      }
+    }
+
+    function filterPaletteResults(query) {
+      const container = document.getElementById('paletteResults');
+      if (!container) return;
+
+      container.innerHTML = '';
+      const q = query.toLowerCase();
+
+      state.notes.filter(n => n.title.toLowerCase().includes(q)).forEach(note => {
+        const item = document.createElement('div');
+        item.className = 'p-2 rounded hover:theme-bg-sheet cursor-pointer flex items-center justify-between theme-text-main';
+        item.onclick = () => {
+          selectNote(note.id);
+          closeCommandPalette();
+        };
+        item.innerHTML = `
+          <span class="font-medium">${escapeHtml(note.title)}</span>
+          <span class="text-[10px] theme-text-muted">Jump to Note</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function closeCommandPalette() {
+      const modal = document.getElementById('commandPaletteModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function openFindReplaceModal() {
+      document.getElementById('findReplaceModal').classList.remove('hidden');
+      document.getElementById('findInput').focus();
+    }
+
+    function closeFindReplaceModal() {
+      document.getElementById('findReplaceModal').classList.add('hidden');
+    }
+
+    function executeReplace(all = false) {
+      const findText = document.getElementById('findInput').value;
+      const replaceText = document.getElementById('replaceInput').value;
+      const editor = document.getElementById('pane1Editor');
+
+      if (!findText || !editor) return;
+
+      if (all) {
+        editor.value = editor.value.replaceAll(findText, replaceText);
+      } else {
+        editor.value = editor.value.replace(findText, replaceText);
+      }
+
+      handleContentInput();
+      showToast(all ? 'Replaced all occurrences' : 'Replaced next occurrence');
+    }
+
+    function toggleZenMode() {
+      document.body.classList.toggle('zen-active');
+      showToast('Zen focus mode toggled (Alt+Z)');
+    }
+
+    function openSettingsModal() {
+      const modal = document.getElementById('settingsModal');
+      if (modal) {
+        // Update Diagnostics
+        const storageSize = Math.round(JSON.stringify(state).length / 1024);
+        document.getElementById('diagStorageKB').innerText = `${storageSize} KB`;
+        document.getElementById('diagTotalNotes').innerText = state.notes.length;
+
+        let totalWords = 0;
+        state.notes.forEach(n => {
+          totalWords += (n.content || '').trim().split(/\s+/).length;
+        });
+        document.getElementById('diagTotalWords').innerText = totalWords;
+
+        modal.classList.remove('hidden');
+      }
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.add('hidden');
+    }
+
+    function handleGlobalShortcuts(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+        e.preventDefault();
+        toggleLeftSidebar();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        openCommandPalette();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+        e.preventDefault();
+        createNewNote();
+      } else if (e.altKey && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        toggleZenMode();
+      } else if (e.key === 'Escape') {
+        closeCommandPalette();
+        closeFindReplaceModal();
+        closeSettingsModal();
+        closeSnapshotsModal();
+        closeNewNoteModal();
+        if (['corkboard', 'graph', 'flashcards'].includes(state.workspaceMode)) {
+          exitOverlayView();
+        }
+      }
+    }
+
+    // UTILS
+    function showToast(msg) {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = 'px-3 py-2 rounded-lg theme-bg-sheet border theme-border shadow-lg text-xs theme-text-main font-semibold flex items-center space-x-2 transition-all duration-300 transform translate-y-2';
+      toast.innerHTML = `<i class="fa-solid fa-circle-info theme-accent"></i><span>${escapeHtml(msg)}</span>`;
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 2500);
+    }
+
+    function showSaveIndicator() {
+      const ind = document.getElementById('saveIndicator');
+      if (ind) {
+        ind.classList.remove('hidden');
+        setTimeout(() => ind.classList.add('hidden'), 2000);
+      }
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    function toggleRightInspector() {
+      const inspector = document.getElementById('rightInspector');
+      if (inspector) inspector.classList.toggle('hidden');
+    }
+
+    function syncEditorScroll() {
+      const editor = document.getElementById('pane1Editor');
+      const preview = document.getElementById('pane2Preview');
+      if (state.workspaceMode === 'sepa' && editor && preview) {
+        const pct = editor.scrollTop / (editor.scrollHeight - editor.clientHeight);
+        preview.scrollTop = pct * (preview.scrollHeight - preview.clientHeight);
+      }
+    }
+
+    function syncPreviewScroll() {}
+    function initSpeechRecognition() {}
+    function toggleSpeechRecognition() {}
+    function speakActiveNote() {}
+    function promptNoteLock() {}
+    function unlockActiveNote() {}
+    function openSnapshotsModal() {}
+    function closeSnapshotsModal() {}
+    function startAutoSnapshotInterval() {}
+    function createManualSnapshot() {}
+    function restoreSelectedSnapshot() {}
+  </script>
+
+
+      <script>
+        (function() {
+          // The root element's background fills the whole page. As in CSS,
+          // the body's background is used when the root element has none.
+          function getPageBackgroundColor() {
+            var docStyle = window.getComputedStyle(document.documentElement);
+            var color = docStyle.backgroundColor;
+            if ((color === 'rgba(0, 0, 0, 0)' || color === 'transparent') &&
+                docStyle.backgroundImage === 'none' && document.body) {
+              color = window.getComputedStyle(document.body).backgroundColor;
+            }
+            return color || '';
+          }
+
+          var lastReportedColor = '';
+          function reportBackgroundColor() {
+            try {
+              var color = getPageBackgroundColor();
+              if (color === lastReportedColor) return;
+              lastReportedColor = color;
+              window.parent.postMessage({
+                type: 'ATARI_CODE_EMBED_BACKGROUND_COLOR',
+                backgroundColor: color
+              }, '*');
+            } catch (e) {}
+          }
+
+          // The page background usually changes through an attribute on html
+          // or body (for example a theme class), a style sheet in head, or the
+          // system color scheme.
+          if (typeof MutationObserver !== 'undefined') {
+            var observer = new MutationObserver(reportBackgroundColor);
+            observer.observe(document.documentElement, {attributes: true});
+            if (document.body) {
+              observer.observe(document.body, {attributes: true});
+            }
+            if (document.head) {
+              observer.observe(document.head, {
+                attributes: true,
+                childList: true,
+                subtree: true,
+                characterData: true
+              });
+            }
+          }
+          var colorSchemeQuery =
+              window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+          if (colorSchemeQuery && colorSchemeQuery.addEventListener) {
+            colorSchemeQuery.addEventListener('change', reportBackgroundColor);
+          }
+          window.addEventListener('load', reportBackgroundColor);
+          window.addEventListener('transitionend', reportBackgroundColor);
+          window.addEventListener('animationend', reportBackgroundColor);
+          reportBackgroundColor();
+        })();
+      </script>
+    </body></html>
