@@ -6,5 +6,6 @@ PaperDesk is completely open to new ideas so if you have an idea feel free to ad
 Some information about PaperDesk is that I'm currently working on a data-rich version of PaperDesk called PaperDesk ULTRA.
 There is a google site version and a normal HTML version.
 # WARNING!!! keep in mind that the google site version does not save. I'm still working on that.
-However, the file version does save, so I recommend that you use the HTML File version
+However, the file version does save, so I recommend that you use the HTML File version\n
 Thanks!
+# Google Sites link: https://sites.google.com/student.musd.org/paperdeskultrastudio/full-page-embed
